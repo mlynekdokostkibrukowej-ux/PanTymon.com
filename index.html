@@ -68,3 +68,86 @@
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Moja Strona z Muzyką</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1a1a1a;
+            color: white;
+            padding-top: 50px;
+            overflow: hidden;
+        }
+
+        .ptoszek-img {
+            width: 200px;
+            border-radius: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .ptoszek-img:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 20px #00ffcc;
+        }
+
+        .moving-btn {
+            position: absolute;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #ff0055;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: top 0.2s ease, left 0.2s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Witaj na mojej stronie!</h1>
+    <p>Kliknij gdziekolwiek na stronie lub na obrazek, aby włączyć dźwięk!</p>
+
+    <!-- Twój plik audio (zamień dzwiek.mp3 na własną nazwę) -->
+    <audio id="bgAudio" src="dzwiek.mp3" loop></audio>
+
+    <!-- Obrazek włączający dźwięk po kliknięciu -->
+    <img class="ptoszek-img" src="moj_obrazek.jpg" alt="Zdjęcie" onclick="playAudio()">
+
+    <br><br>
+
+    <button class="moving-btn" id="btn" onmouseover="moveButton()">Złap mnie!</button>
+
+    <script>
+        const audio = document.getElementById('bgAudio');
+
+        // Funkcja włączająca dźwięk
+        function playAudio() {
+            audio.play();
+        }
+
+        // Włącza muzykę przy pierwszym kliknięciu w dowolne miejsce na stronie
+        document.body.addEventListener('click', function() {
+            audio.play();
+        }, { once: true });
+
+        // Uciekający przycisk
+        function moveButton() {
+            const btn = document.getElementById('btn');
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 50);
+            
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+        }
+    </script>
+
+</body>
+</html>
+

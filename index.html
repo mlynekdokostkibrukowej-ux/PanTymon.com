@@ -90,6 +90,27 @@
             transition: top 0.1s ease, left 0.1s ease;
         }
 
+        /* Napis w prawym dolnym rogu */
+        .footer-disclaimer {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 12px;
+            border-radius: 8px;
+            z-index: 25;
+            pointer-events: auto;
+        }
+        .footer-disclaimer a {
+            color: #00ffcc;
+            text-decoration: none;
+        }
+        .footer-disclaimer a:hover {
+            text-decoration: underline;
+        }
+
         .instruction, h1 {
             position: relative;
             z-index: 20;
@@ -119,12 +140,21 @@
         <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
     </div>
 
-    <!-- LATAJĄCE OBRAZKI W TLE -->
+    <!-- 5 LATAJĄCYCH OBRAZKÓW W TLE -->
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
 
     <!-- UCIEKAJĄCY PRZYCISK -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
+
+    <!-- NAPIS W PRAWYM DOLNYM ROGU -->
+    <div class="footer-disclaimer">
+        Strona powstała w celach humorystycznych. Wszystkie zażalenia proszę zgłaszać na: 
+        <a href="mailto:mlynek.do.kostki.brukowej@gmail.com">mlynek.do.kostki.brukowej@gmail.com</a>
+    </div>
 
     <script>
         const audio = document.getElementById('bgAudio');
@@ -152,14 +182,10 @@
             createParticles(event.clientX, event.clientY);
         }
 
-        // Efekt wybuchu małych obrazków
         function createParticles(x, y) {
             for (let i = 0; i < 6; i++) {
                 const particle = document.createElement('img');
-                
-                // Zmieniono rozszerzenie na .jpg
                 particle.src = 'obrazeczek.jpg'; 
-                
                 particle.classList.add('particle');
                 
                 particle.style.left = (x - 20) + 'px';

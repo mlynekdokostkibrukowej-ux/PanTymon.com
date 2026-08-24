@@ -50,30 +50,33 @@
 <body>
 
     <h1>Witaj na mojej stronie!</h1>
-    <p class="instruction">Kliknij w ekran, aby włączyć muzykę!</p>
+    <p class="instruction">Kliknij gdziekolwiek w ekran, aby włączyć muzykę!</p>
 
-    <!-- Twój plik audio -->
-    <audio id="bgAudio" loop preload="auto">
-        <source src="muzyka.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Plik muzyczny (jeśli na GitHubie nazywa się inaczej, zmień tutaj) -->
+    <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
 
-    <!-- Twoje latające obrazki -->
+    <!-- 
+      TUTAJ JEST PLIK OBRAZKA: 
+      Jeśli Twój plik na GitHubie to np. obrazek.jpg albo fotka.png, 
+      zmień poniżej "obrazek.png" na dokładną nazwę swojego pliku!
+    -->
     <img class="dvd-img" src="obrazek.png" alt="Pan Piotr">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr">
+    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
 
     <!-- Uciekający przycisk -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
 
     <script>
         const audio = document.getElementById('bgAudio');
-        
-        // Włączenie dźwięku po kliknięciu
-        document.body.addEventListener('click', () => {
-            audio.play().catch(e => console.log("Błąd audio:", e));
+
+        // Uruchomienie dźwięku po kliknięciu
+        document.addEventListener('click', () => {
+            audio.play().catch(error => {
+                console.log("Błąd odtwarzania audio:", error);
+            });
         }, { once: true });
 
-        // Uciekający przycisk
+        // Uciekanie przycisku
         function moveButton() {
             const btn = document.getElementById('btn');
             const x = Math.random() * (window.innerWidth - 150);
@@ -82,7 +85,7 @@
             btn.style.top = y + 'px';
         }
 
-        // Animacja odbijających się obrazków jak DVD
+        // Animacja obrazków DVD
         const images = document.querySelectorAll('.dvd-img');
         const dvdObjects = [];
 

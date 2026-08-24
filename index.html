@@ -11,13 +11,13 @@
             color: white;
             padding-top: 50px;
             margin: 0;
-            overflow: hidden; /* Ukrywa paski przewijania */
+            overflow: hidden;
         }
 
         /* Latające obrazki DVD */
         .dvd-img {
             position: absolute;
-            width: 120px;
+            width: 150px;
             height: auto;
             border-radius: 10px;
             cursor: pointer;
@@ -40,16 +40,11 @@
             transition: top 0.1s ease, left 0.1s ease;
         }
 
-        .instruction {
-            color: #aaa;
+        .instruction, h1 {
             position: relative;
             z-index: 10;
         }
-
-        h1 {
-            position: relative;
-            z-index: 10;
-        }
+        .instruction { color: #aaa; }
     </style>
 </head>
 <body>
@@ -57,27 +52,24 @@
     <h1>Witaj na mojej stronie!</h1>
     <p class="instruction">Kliknij w ekran, aby włączyć muzykę!</p>
 
-    <!-- Muzyka w tle -->
+    <!-- Twoja muzyka o Yarisie -->
     <audio id="bgAudio" loop preload="auto">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        <source src="Why's this dealer zıplayan - bouncing Toyota Yaris meme edit [nEVIlrGqn_4]" type="audio/mpeg">
     </audio>
 
-    <!-- Tutaj dodajesz swoje obrazki (możesz dopisać kolejne) -->
-    <img class="dvd-img" src="https://picsum.photos/150?random=1" alt="DVD 1">
-    <img class="dvd-img" src="https://picsum.photos/150?random=2" alt="DVD 2">
-    <img class="dvd-img" src="https://picsum.photos/150?random=3" alt="DVD 3">
+    <!-- Twój obrazek (możesz skopiować tę linijkę kilka razy, żeby było ich więcej!) -->
+    <img class="dvd-img" src="tuuf pan piotr.png" alt="Pan Piotr">
+    <img class="dvd-img" src="tuuf pan piotr.png" alt="Pan Piotr 2">
 
     <!-- Uciekający przycisk -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
 
     <script>
-        // Odtwarzanie dźwięku po kliknięciu
         const audio = document.getElementById('bgAudio');
         document.body.addEventListener('click', () => {
-            audio.play().catch(e => console.log(e));
+            audio.play().catch(e => console.log("Błąd audio:", e));
         }, { once: true });
 
-        // Uciekanie przycisku
         function moveButton() {
             const btn = document.getElementById('btn');
             const x = Math.random() * (window.innerWidth - 150);
@@ -90,14 +82,13 @@
         const images = document.querySelectorAll('.dvd-img');
         const dvdObjects = [];
 
-        // Inicjalizacja pozycji i prędkości dla każdego obrazka
-        images.forEach((img, index) => {
+        images.forEach((img) => {
             dvdObjects.push({
                 element: img,
                 x: Math.random() * (window.innerWidth - 150),
                 y: Math.random() * (window.innerHeight - 150),
-                dx: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2), // Prędkość X
-                dy: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2)  // Prędkość Y
+                dx: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2),
+                dy: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2)
             });
         });
 
@@ -106,24 +97,15 @@
             const screenHeight = window.innerHeight;
 
             dvdObjects.forEach(obj => {
-                const imgWidth = obj.element.clientWidth || 120;
-                const imgHeight = obj.element.clientHeight || 120;
+                const imgWidth = obj.element.clientWidth || 150;
+                const imgHeight = obj.element.clientHeight || 150;
 
-                // Aktualizacja pozycji
                 obj.x += obj.dx;
                 obj.y += obj.dy;
 
-                // Odbicie od lewej/prawej krawędzi
-                if (obj.x + imgWidth >= screenWidth || obj.x <= 0) {
-                    obj.dx *= -1;
-                }
+                if (obj.x + imgWidth >= screenWidth || obj.x <= 0) obj.dx *= -1;
+                if (obj.y + imgHeight >= screenHeight || obj.y <= 0) obj.dy *= -1;
 
-                // Odbicie od górnej/dolnej krawędzi
-                if (obj.y + imgHeight >= screenHeight || obj.y <= 0) {
-                    obj.dy *= -1;
-                }
-
-                // Przypisanie nowej pozycji na ekranie
                 obj.element.style.left = obj.x + 'px';
                 obj.element.style.top = obj.y + 'px';
             });
@@ -131,7 +113,6 @@
             requestAnimationFrame(animateDVD);
         }
 
-        // Uruchomienie animacji DVD
         animateDVD();
     </script>
 

@@ -9,23 +9,49 @@
             text-align: center;
             background-color: #1a1a1a;
             color: white;
-            padding-top: 50px;
+            padding-top: 30px;
             margin: 0;
             overflow: hidden;
-        }
-
-        /* Latające obrazki DVD */
-        .dvd-img {
-            position: absolute;
-            width: 150px;
-            height: auto;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
             user-select: none;
         }
 
-        /* Uciekający przycisk */
+        #score-board {
+            font-size: 26px;
+            font-weight: bold;
+            color: #00ffcc;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 20;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        /* Nieruchomy obrazek do klikania (obraz.png) */
+        .click-img {
+            width: 160px;
+            height: auto;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 0 25px #ff0055;
+            position: relative;
+            z-index: 20;
+            transition: transform 0.1s ease;
+            margin-top: 20px;
+        }
+
+        .click-img:active {
+            transform: scale(0.93);
+        }
+
+        /* Latające obrazki DVD (obrazek.png) */
+        .dvd-img {
+            position: absolute;
+            width: 140px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            z-index: 5;
+        }
+
         .moving-btn {
             position: absolute;
             padding: 15px 30px;
@@ -42,46 +68,46 @@
 
         .instruction, h1 {
             position: relative;
-            z-index: 10;
+            z-index: 20;
+            margin: 5px 0;
         }
-        .instruction { color: #aaa; }
+        .instruction { color: #aaa; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <h1>Witaj na mojej stronie!</h1>
-    <p class="instruction">rób co chcesz</p>
+    <div id="score-board">Punkty: <span id="score">0</span></div>
+    <p class="instruction">Kliknij w ekran, aby włączyć muzykę! Klikaj w poniższy obrazek, by zbierać punkty!</p>
 
-    <!-- Plik muzyczny (jeśli na GitHubie nazywa się inaczej, zmień tutaj) -->
+    <!-- Plik muzyczny -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
 
-    <!-- 
-      TUTAJ JEST PLIK OBRAZKA: 
-      Jeśli Twój plik na GitHubie to np. obrazek.jpg albo fotka.png, 
-      zmień poniżej "obrazek.png" na dokładną nazwę swojego pliku!
-    -->
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
-    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr 2">
-    <!-- Uciekający przycisk -->
+    <!-- NIERUCHOMY OBRAZEK DO KLIKANIA -->
+    <div>
+        <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPoint()">
+    </div>
+
+    <!-- LATAJĄCE OBRAZKI W TLE -->
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+
+    <!-- UCIEKAJĄCY PRZYCISK -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
 
     <script>
         const audio = document.getElementById('bgAudio');
-
-        // Uruchomienie dźwięku po kliknięciu
+        
         document.addEventListener('click', () => {
-            audio.play().catch(error => {
-                console.log("Błąd odtwarzania audio:", error);
-            });
+            audio.play().catch(error => console.log("Błąd audio:", error));
         }, { once: true });
 
-        // Uciekanie przycisku
+        let score = 0;
+        function addPoint() {
+            score++;
+            document.getElementById('score').innerText = score;
+        }
+
         function moveButton() {
             const btn = document.getElementById('btn');
             const x = Math.random() * (window.innerWidth - 150);
@@ -90,17 +116,16 @@
             btn.style.top = y + 'px';
         }
 
-        // Animacja obrazków DVD
-        const images = document.querySelectorAll('.dvd-img');
+        const dvdImages = document.querySelectorAll('.dvd-img');
         const dvdObjects = [];
 
-        images.forEach((img) => {
+        dvdImages.forEach((img) => {
             dvdObjects.push({
                 element: img,
                 x: Math.random() * (window.innerWidth - 150),
                 y: Math.random() * (window.innerHeight - 150),
-                dx: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2),
-                dy: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2)
+                dx: (Math.random() > 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
+                dy: (Math.random() > 0.5 ? 1 : -1) * (2.5 + Math.random() * 2)
             });
         });
 
@@ -109,8 +134,8 @@
             const screenHeight = window.innerHeight;
 
             dvdObjects.forEach(obj => {
-                const imgWidth = obj.element.clientWidth || 150;
-                const imgHeight = obj.element.clientHeight || 150;
+                const imgWidth = obj.element.clientWidth || 140;
+                const imgHeight = obj.element.clientHeight || 140;
 
                 obj.x += obj.dx;
                 obj.y += obj.dy;

@@ -56,6 +56,16 @@
             transform: scale(0.9);
         }
 
+        /* Styl dla wyleciatujących miniaturek (obrazeczek.jpg) */
+        .particle {
+            position: absolute;
+            width: 40px;
+            height: auto;
+            pointer-events: none;
+            z-index: 30;
+            border-radius: 5px;
+        }
+
         /* Latające obrazki DVD (obrazek.png) */
         .dvd-img {
             position: absolute;
@@ -106,7 +116,7 @@
 
     <!-- NIERUCHOMY OBRAZEK DO KLIKANIA -->
     <div>
-        <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor()">
+        <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
     </div>
 
     <!-- LATAJĄCE OBRAZKI W TLE -->
@@ -127,24 +137,58 @@
         let clickTimestamps = [];
         let maxCps = 0;
 
-        // Funkcja dodająca punkty, zmieniająca kolor i zliczająca kliknięcia CPS
-        function addPointAndChangeColor() {
+        function addPointAndChangeColor(event) {
             score++;
             document.getElementById('score').innerText = score;
 
-            // Rejestrowanie czasu kliknięcia
             const now = Date.now();
             clickTimestamps.push(now);
 
             // Zmiana koloru tła
             const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
             document.body.style.backgroundColor = randomColor;
+
+            // Tworzenie wybuchu obrazeczek.jpg
+            createParticles(event.clientX, event.clientY);
         }
 
-        // Pętla licząca CPS z ostatniej sekundy
+        // Efekt wybuchu małych obrazków
+        function createParticles(x, y) {
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('img');
+                
+                // Zmieniono rozszerzenie na .jpg
+                particle.src = 'obrazeczek.jpg'; 
+                
+                particle.classList.add('particle');
+                
+                particle.style.left = (x - 20) + 'px';
+                particle.style.top = (y - 20) + 'px';
+
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 50 + Math.random() * 100;
+                const destX = (Math.cos(angle) * speed);
+                const destY = (Math.sin(angle) * speed);
+
+                particle.animate([
+                    { transform: 'translate(0px, 0px) scale(1) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${destX}px, ${destY}px) scale(0.2) rotate(360deg)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0,0,0.2,1)'
+                });
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }
+        }
+
+        // Pętla CPS
         setInterval(() => {
             const now = Date.now();
-            // Usuń kliknięcia starsze niż 1000ms (1 sekunda)
             clickTimestamps = clickTimestamps.filter(timestamp => now - timestamp <= 1000);
             
             const currentCps = clickTimestamps.length;

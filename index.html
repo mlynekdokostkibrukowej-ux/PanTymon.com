@@ -10,23 +10,22 @@
             background-color: #1a1a1a;
             color: white;
             padding-top: 50px;
-            overflow: hidden;
+            margin: 0;
+            overflow: hidden; /* Ukrywa paski przewijania */
         }
 
-        /* Styl obrazka */
-        .ptoszek-img {
-            width: 250px;
-            border-radius: 15px;
-            transition: transform 0.2s, box-shadow 0.2s;
+        /* Latające obrazki DVD */
+        .dvd-img {
+            position: absolute;
+            width: 120px;
+            height: auto;
+            border-radius: 10px;
             cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            user-select: none;
         }
 
-        .ptoszek-img:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 0 20px #00ffcc;
-        }
-
-        /* Styl uciekającego przycisku */
+        /* Uciekający przycisk */
         .moving-btn {
             position: absolute;
             padding: 15px 30px;
@@ -37,43 +36,45 @@
             border: none;
             border-radius: 30px;
             cursor: pointer;
-            transition: top 0.2s ease, left 0.2s ease;
+            z-index: 10;
+            transition: top 0.1s ease, left 0.1s ease;
         }
 
         .instruction {
-            margin-bottom: 25px;
             color: #aaa;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            position: relative;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
     <h1>Witaj na mojej stronie!</h1>
-    <p class="instruction">Kliknij w obrazek lub w dowolne miejsce, aby włączyć dźwięk!</p>
+    <p class="instruction">Kliknij w ekran, aby włączyć muzykę!</p>
 
-    <!-- Odtwarzacz audio z muzyką z serwera -->
+    <!-- Muzyka w tle -->
     <audio id="bgAudio" loop preload="auto">
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Obrazek -->
-    <img class="ptoszek-img" src="https://picsum.photos/300" alt="Zdjęcie" onclick="playAudio()">
-
-    <br><br><br>
+    <!-- Tutaj dodajesz swoje obrazki (możesz dopisać kolejne) -->
+    <img class="dvd-img" src="https://picsum.photos/150?random=1" alt="DVD 1">
+    <img class="dvd-img" src="https://picsum.photos/150?random=2" alt="DVD 2">
+    <img class="dvd-img" src="https://picsum.photos/150?random=3" alt="DVD 3">
 
     <!-- Uciekający przycisk -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
 
     <script>
+        // Odtwarzanie dźwięku po kliknięciu
         const audio = document.getElementById('bgAudio');
-
-        function playAudio() {
-            audio.play().catch(err => console.log("Błąd odtwarzania:", err));
-        }
-
-        // Włącza muzykę po pierwszym kliknięciu w dowolne miejsce na stronie
-        document.body.addEventListener('click', function() {
-            playAudio();
+        document.body.addEventListener('click', () => {
+            audio.play().catch(e => console.log(e));
         }, { once: true });
 
         // Uciekanie przycisku
@@ -81,10 +82,57 @@
             const btn = document.getElementById('btn');
             const x = Math.random() * (window.innerWidth - 150);
             const y = Math.random() * (window.innerHeight - 50);
-            
             btn.style.left = x + 'px';
             btn.style.top = y + 'px';
         }
+
+        // ANIMACJA LOGO DVD
+        const images = document.querySelectorAll('.dvd-img');
+        const dvdObjects = [];
+
+        // Inicjalizacja pozycji i prędkości dla każdego obrazka
+        images.forEach((img, index) => {
+            dvdObjects.push({
+                element: img,
+                x: Math.random() * (window.innerWidth - 150),
+                y: Math.random() * (window.innerHeight - 150),
+                dx: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2), // Prędkość X
+                dy: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2)  // Prędkość Y
+            });
+        });
+
+        function animateDVD() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            dvdObjects.forEach(obj => {
+                const imgWidth = obj.element.clientWidth || 120;
+                const imgHeight = obj.element.clientHeight || 120;
+
+                // Aktualizacja pozycji
+                obj.x += obj.dx;
+                obj.y += obj.dy;
+
+                // Odbicie od lewej/prawej krawędzi
+                if (obj.x + imgWidth >= screenWidth || obj.x <= 0) {
+                    obj.dx *= -1;
+                }
+
+                // Odbicie od górnej/dolnej krawędzi
+                if (obj.y + imgHeight >= screenHeight || obj.y <= 0) {
+                    obj.dy *= -1;
+                }
+
+                // Przypisanie nowej pozycji na ekranie
+                obj.element.style.left = obj.x + 'px';
+                obj.element.style.top = obj.y + 'px';
+            });
+
+            requestAnimationFrame(animateDVD);
+        }
+
+        // Uruchomienie animacji DVD
+        animateDVD();
     </script>
 
 </body>

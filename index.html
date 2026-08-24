@@ -13,6 +13,7 @@
             margin: 0;
             overflow: hidden;
             user-select: none;
+            transition: background-color 0.3s ease; /* Płynna zmiana koloru tła */
         }
 
         #score-board {
@@ -83,9 +84,9 @@
     <!-- Plik muzyczny -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
 
-    <!-- NIERUCHOMY OBRAZEK DO KLIKANIA -->
+    <!-- NIERUCHOMY OBRAZEK DO KLIKANIA (Zmienia kolor i dodaje punkty) -->
     <div>
-        <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPoint()">
+        <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor()">
     </div>
 
     <!-- LATAJĄCE OBRAZKI W TLE -->
@@ -103,9 +104,15 @@
         }, { once: true });
 
         let score = 0;
-        function addPoint() {
+
+        // Funkcja dodająca punkty i zmieniająca kolor tła
+        function addPointAndChangeColor() {
             score++;
             document.getElementById('score').innerText = score;
+
+            // Generowanie losowego koloru HEX
+            const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+            document.body.style.backgroundColor = randomColor;
         }
 
         function moveButton() {

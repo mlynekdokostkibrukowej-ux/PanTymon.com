@@ -9,22 +9,35 @@
             text-align: center;
             background-color: #1a1a1a;
             color: white;
-            padding-top: 30px;
+            padding-top: 20px;
             margin: 0;
             overflow: hidden;
             user-select: none;
-            transition: background-color 0.3s ease; /* Płynna zmiana koloru tła */
+            transition: background-color 0.3s ease;
         }
 
-        #score-board {
-            font-size: 26px;
-            font-weight: bold;
-            color: #00ffcc;
-            margin-bottom: 10px;
+        /* Panel ze statystykami */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
             position: relative;
             z-index: 20;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            margin-bottom: 10px;
         }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #score-board { color: #00ffcc; text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
+        #cps-board { color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+        #max-cps-board { color: #ff0055; text-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
 
         /* Nieruchomy obrazek do klikania (obraz.png) */
         .click-img {
@@ -35,12 +48,12 @@
             box-shadow: 0 0 25px #ff0055;
             position: relative;
             z-index: 20;
-            transition: transform 0.1s ease;
-            margin-top: 20px;
+            transition: transform 0.05s ease;
+            margin-top: 15px;
         }
 
         .click-img:active {
-            transform: scale(0.93);
+            transform: scale(0.9);
         }
 
         /* Latające obrazki DVD (obrazek.png) */
@@ -78,13 +91,20 @@
 <body>
 
     <h1>Witaj na mojej stronie!</h1>
-    <div id="score-board">Punkty: <span id="score">0</span></div>
-    <p class="instruction">Kliknij w ekran, aby włączyć muzykę! Klikaj w poniższy obrazek, by zbierać punkty!</p>
+    
+    <!-- STATYSTYKI -->
+    <div class="stats-container">
+        <div class="stat-box" id="score-board">Punkty: <span id="score">0</span></div>
+        <div class="stat-box" id="cps-board">CPS: <span id="cps">0.0</span></div>
+        <div class="stat-box" id="max-cps-board">MAX CPS: <span id="max-cps">0.0</span></div>
+    </div>
+
+    <p class="instruction">Kliknij w ekran, aby włączyć muzykę! Naklikaj jak najszybciej!</p>
 
     <!-- Plik muzyczny -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
 
-    <!-- NIERUCHOMY OBRAZEK DO KLIKANIA (Zmienia kolor i dodaje punkty) -->
+    <!-- NIERUCHOMY OBRAZEK DO KLIKANIA -->
     <div>
         <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor()">
     </div>
@@ -104,16 +124,37 @@
         }, { once: true });
 
         let score = 0;
+        let clickTimestamps = [];
+        let maxCps = 0;
 
-        // Funkcja dodająca punkty i zmieniająca kolor tła
+        // Funkcja dodająca punkty, zmieniająca kolor i zliczająca kliknięcia CPS
         function addPointAndChangeColor() {
             score++;
             document.getElementById('score').innerText = score;
 
-            // Generowanie losowego koloru HEX
+            // Rejestrowanie czasu kliknięcia
+            const now = Date.now();
+            clickTimestamps.push(now);
+
+            // Zmiana koloru tła
             const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
             document.body.style.backgroundColor = randomColor;
         }
+
+        // Pętla licząca CPS z ostatniej sekundy
+        setInterval(() => {
+            const now = Date.now();
+            // Usuń kliknięcia starsze niż 1000ms (1 sekunda)
+            clickTimestamps = clickTimestamps.filter(timestamp => now - timestamp <= 1000);
+            
+            const currentCps = clickTimestamps.length;
+            document.getElementById('cps').innerText = currentCps;
+
+            if (currentCps > maxCps) {
+                maxCps = currentCps;
+                document.getElementById('max-cps').innerText = maxCps;
+            }
+        }, 100);
 
         function moveButton() {
             const btn = document.getElementById('btn');

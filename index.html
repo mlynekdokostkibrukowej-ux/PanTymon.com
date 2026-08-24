@@ -52,24 +52,28 @@
     <h1>Witaj na mojej stronie!</h1>
     <p class="instruction">Kliknij w ekran, aby włączyć muzykę!</p>
 
-    <!-- Twoja muzyka o Yarisie -->
+    <!-- Twój plik audio -->
     <audio id="bgAudio" loop preload="auto">
-        <source src="Why's this dealer zıplayan - bouncing Toyota Yaris meme edit [nEVIlrGqn_4]" type="audio/mpeg">
+        <source src="muzyka.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Twój obrazek (możesz skopiować tę linijkę kilka razy, żeby było ich więcej!) -->
-    <img class="dvd-img" src="tuuf pan piotr.png" alt="Pan Piotr">
-    <img class="dvd-img" src="tuuf pan piotr.png" alt="Pan Piotr 2">
+    <!-- Twoje latające obrazki -->
+    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr">
+    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr">
+    <img class="dvd-img" src="obrazek.png" alt="Pan Piotr">
 
     <!-- Uciekający przycisk -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
 
     <script>
         const audio = document.getElementById('bgAudio');
+        
+        // Włączenie dźwięku po kliknięciu
         document.body.addEventListener('click', () => {
             audio.play().catch(e => console.log("Błąd audio:", e));
         }, { once: true });
 
+        // Uciekający przycisk
         function moveButton() {
             const btn = document.getElementById('btn');
             const x = Math.random() * (window.innerWidth - 150);
@@ -78,7 +82,7 @@
             btn.style.top = y + 'px';
         }
 
-        // ANIMACJA LOGO DVD
+        // Animacja odbijających się obrazków jak DVD
         const images = document.querySelectorAll('.dvd-img');
         const dvdObjects = [];
 

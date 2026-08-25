@@ -9,28 +9,93 @@
             text-align: center;
             background-color: #1a1a1a;
             color: white;
-            padding-top: 20px;
+            padding-top: 15px;
             margin: 0;
             overflow: hidden;
             user-select: none;
             transition: background-color 0.3s ease;
         }
 
-        /* Panel ze statystykami */
+        /* --- OBLOKOWANY EKRAN LOGOWANIA --- */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 15, 15, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.3);
+            text-align: center;
+        }
+
+        .login-box h2 {
+            margin-top: 0;
+            color: #00ffcc;
+            font-size: 28px;
+        }
+
+        .login-box input {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: #222;
+            color: white;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+            width: 200px;
+        }
+
+        .login-box input:focus {
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        .login-box button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #ff0055;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .login-box button:hover {
+            background: #ff2a75;
+            transform: scale(1.05);
+        }
+
+        /* --- STATYSTYKI I GRA --- */
         .stats-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             position: relative;
             z-index: 20;
             margin-bottom: 10px;
         }
 
         .stat-box {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
             border-radius: 12px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -39,9 +104,73 @@
         #cps-board { color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
         #max-cps-board { color: #ff0055; text-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
 
-        /* Nieruchomy obrazek do klikania (obraz.png) */
+        /* Tabela Rankingowa w lewym górnym rogu */
+        .leaderboard {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: left;
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            z-index: 25;
+            font-size: 13px;
+            min-width: 180px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        .leaderboard h3 { 
+            margin: 0 0 8px 0; 
+            color: #00ffcc; 
+            font-size: 15px; 
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 4px;
+        }
+        .leaderboard ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .leaderboard li {
+            margin-bottom: 4px;
+            color: #ddd;
+        }
+        .change-nick-btn {
+            display: block;
+            margin: 8px auto 0 auto;
+            background: #ff0055;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #cheat-warning {
+            display: none;
+            color: #ff0055;
+            font-size: 20px;
+            font-weight: bold;
+            position: relative;
+            z-index: 25;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 8px 16px;
+            border-radius: 10px;
+            margin: 5px auto;
+            width: fit-content;
+            border: 2px solid #ff0055;
+            animation: pulse 0.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
         .click-img {
-            width: 160px;
+            width: 150px;
             height: auto;
             border-radius: 15px;
             cursor: pointer;
@@ -49,14 +178,11 @@
             position: relative;
             z-index: 20;
             transition: transform 0.05s ease;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
-        .click-img:active {
-            transform: scale(0.9);
-        }
+        .click-img:active { transform: scale(0.9); }
 
-        /* Styl dla wyleciatujących miniaturek (obrazeczek.jpg) */
         .particle {
             position: absolute;
             width: 40px;
@@ -66,7 +192,6 @@
             border-radius: 5px;
         }
 
-        /* Latające obrazki DVD (obrazek.png) */
         .dvd-img {
             position: absolute;
             width: 140px;
@@ -90,7 +215,6 @@
             transition: top 0.1s ease, left 0.1s ease;
         }
 
-        /* Napis w prawym dolnym rogu */
         .footer-disclaimer {
             position: absolute;
             bottom: 10px;
@@ -101,56 +225,61 @@
             padding: 6px 12px;
             border-radius: 8px;
             z-index: 25;
-            pointer-events: auto;
         }
-        .footer-disclaimer a {
-            color: #00ffcc;
-            text-decoration: none;
-        }
-        .footer-disclaimer a:hover {
-            text-decoration: underline;
-        }
+        .footer-disclaimer a { color: #00ffcc; text-decoration: none; }
 
-        .instruction, h1 {
-            position: relative;
-            z-index: 20;
-            margin: 5px 0;
-        }
+        .instruction, h1 { position: relative; z-index: 20; margin: 5px 0; }
         .instruction { color: #aaa; font-size: 14px; }
     </style>
 </head>
 <body>
 
+    <!-- EKRAN PODAWANIA NICKU PRZED GRĄ -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Witaj w Clickerze!</h2>
+            <p style="color: #ccc; margin-bottom: 15px;">Wpisz swój nick, aby zacząć:</p>
+            <input type="text" id="nickname-input" placeholder="Twój Nick..." maxlength="15">
+            <br>
+            <button onclick="startGame()">Rozpocznij grę!</button>
+        </div>
+    </div>
+
+    <!-- TABELA RANKINGOWA TOP 5 -->
+    <div class="leaderboard">
+        <h3>🏆 Ranking Top 5</h3>
+        <ol id="high-scores-list">
+            <li>Brak wyników</li>
+        </ol>
+        <button class="change-nick-btn" onclick="changeNickname()">Zmień Nick</button>
+    </div>
+
     <h1>Witaj na mojej stronie!</h1>
     
-    <!-- STATYSTYKI -->
     <div class="stats-container">
         <div class="stat-box" id="score-board">Punkty: <span id="score">0</span></div>
         <div class="stat-box" id="cps-board">CPS: <span id="cps">0.0</span></div>
         <div class="stat-box" id="max-cps-board">MAX CPS: <span id="max-cps">0.0</span></div>
     </div>
 
-    <p class="instruction">Kliknij w ekran, aby włączyć muzykę! Naklikaj jak najszybciej!</p>
+    <div id="cheat-warning">⚠️ WYKRYTO AUTO-CLICKERA! BLOKADA PUNKTY WSTRZYMANE! ⚠️</div>
 
-    <!-- Plik muzyczny -->
+    <p class="instruction">Klikaj w obrazek jak najszybciej!</p>
+
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
 
-    <!-- NIERUCHOMY OBRAZEK DO KLIKANIA -->
     <div>
         <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
     </div>
 
-    <!-- 5 LATAJĄCYCH OBRAZKÓW W TLE -->
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
 
-    <!-- UCIEKAJĄCY PRZYCISK -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
 
-    <!-- NAPIS W PRAWYM DOLNYM ROGU -->
     <div class="footer-disclaimer">
         Strona powstała w celach humorystycznych. Wszystkie zażalenia proszę zgłaszać na: 
         <a href="mailto:mlynek.do.kostki.brukowej@gmail.com">mlynek.do.kostki.brukowej@gmail.com</a>
@@ -158,27 +287,113 @@
 
     <script>
         const audio = document.getElementById('bgAudio');
-        
-        document.addEventListener('click', () => {
-            audio.play().catch(error => console.log("Błąd audio:", error));
-        }, { once: true });
+        let playerName = localStorage.getItem('clicker_current_player') || '';
 
+        // Jeśli w pamięci jest już zapisany nick, wpisujemy go w okienko
+        if (playerName) {
+            document.getElementById('nickname-input').value = playerName;
+        }
+
+        function startGame() {
+            const input = document.getElementById('nickname-input').value.trim();
+            if (input === "") {
+                alert("Proszę wpisać nick!");
+                return;
+            }
+            
+            playerName = input;
+            localStorage.setItem('clicker_current_player', playerName);
+            
+            // Ukrywamy ekran logowania
+            document.getElementById('login-screen').style.display = 'none';
+
+            // Włączamy muzykę po rozpoczęciu gry
+            audio.play().catch(error => console.log("Błąd audio:", error));
+
+            renderLeaderboard();
+        }
+
+        // Pozwala zatwierdzić nick przyciskiem Enter
+        document.getElementById('nickname-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                startGame();
+            }
+        });
+
+        function changeNickname() {
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+
+        // Pobieranie tablicy wyników z pamięci
+        function getLeaderboard() {
+            return JSON.parse(localStorage.getItem('clicker_leaderboard')) || [];
+        }
+
+        // Aktualizacja wyniku w rankingu
+        function updateScoreInLeaderboard(currentScore) {
+            if (!playerName) return;
+
+            let leaderboard = getLeaderboard();
+            const existingPlayerIndex = leaderboard.findIndex(entry => entry.name === playerName);
+
+            if (existingPlayerIndex !== -1) {
+                if (currentScore > leaderboard[existingPlayerIndex].score) {
+                    leaderboard[existingPlayerIndex].score = currentScore;
+                }
+            } else {
+                leaderboard.push({ name: playerName, score: currentScore });
+            }
+
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 5);
+
+            localStorage.setItem('clicker_leaderboard', JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+
+        // Wyświetlanie rankingu na stronie
+        function renderLeaderboard() {
+            const leaderboard = getLeaderboard();
+            const listElement = document.getElementById('high-scores-list');
+            listElement.innerHTML = '';
+
+            if (leaderboard.length === 0) {
+                listElement.innerHTML = '<li>Brak wyników</li>';
+                return;
+            }
+
+            leaderboard.forEach(entry => {
+                const li = document.createElement('li');
+                li.innerHTML = `<b>${entry.name}</b>: <span style="color:#00ffcc">${entry.score}</span> pkt`;
+                if (entry.name === playerName) {
+                    li.style.color = '#ffcc00';
+                }
+                listElement.appendChild(li);
+            });
+        }
+
+        renderLeaderboard();
+
+        // --- LOGIKA GRY ---
         let score = 0;
         let clickTimestamps = [];
         let maxCps = 0;
+        let isCheating = false;
 
         function addPointAndChangeColor(event) {
+            if (isCheating) return;
+
             score++;
             document.getElementById('score').innerText = score;
+
+            updateScoreInLeaderboard(score);
 
             const now = Date.now();
             clickTimestamps.push(now);
 
-            // Zmiana koloru tła
             const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
             document.body.style.backgroundColor = randomColor;
 
-            // Tworzenie wybuchu obrazeczek.jpg
             createParticles(event.clientX, event.clientY);
         }
 
@@ -206,9 +421,7 @@
                     easing: 'cubic-bezier(0,0,0.2,1)'
                 });
 
-                setTimeout(() => {
-                    particle.remove();
-                }, 800);
+                setTimeout(() => { particle.remove(); }, 800);
             }
         }
 
@@ -220,7 +433,15 @@
             const currentCps = clickTimestamps.length;
             document.getElementById('cps').innerText = currentCps;
 
-            if (currentCps > maxCps) {
+            if (currentCps > 20) {
+                isCheating = true;
+                document.getElementById('cheat-warning').style.display = 'block';
+            } else if (currentCps < 5 && isCheating) {
+                isCheating = false;
+                document.getElementById('cheat-warning').style.display = 'none';
+            }
+
+            if (currentCps > maxCps && !isCheating) {
                 maxCps = currentCps;
                 document.getElementById('max-cps').innerText = maxCps;
             }

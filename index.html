@@ -1145,5 +1145,81 @@
 
         animateDVD();
     </script>
+    <!-- Biblioteki Firebase (wersja kompatybilna v8) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+  // Twoja skonfigurowana baza Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPd1grXMdHysx2oApr-oPyv-LL5kgWPIE",
+    authDomain: "pan-piotr-clicker-opinie.firebaseapp.com",
+    databaseURL: "https://pan-piotr-clicker-opinie-default-rtdb.firebaseio.com",
+    projectId: "pan-piotr-clicker-opinie",
+    storageBucket: "pan-piotr-clicker-opinie.firebasestorage.app",
+    messagingSenderId: "299267672814",
+    appId: "1:299267672814:web:1d24ddc412754def9e81ff"
+  };
+  
+  // Inicjalizacja Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function openFeedbackModal() {
+      document.getElementById('feedback-modal').style.display = 'flex';
+  }
+
+  function closeFeedbackModal() {
+      document.getElementById('feedback-modal').style.display = 'none';
+  }
+
+  // WYSYŁANIE OPINII DO BAZY
+  function sendFeedback() {
+      const text = document.getElementById('feedback-text').value.trim();
+      if (!text) {
+          alert("Napisz coś przed wysłaniem!");
+          return;
+      }
+      
+      // Wykorzystuje zmienną z nickiem gracza (lub domyślny 'Gracz')
+      const nick = (typeof playerName !== 'undefined' && playerName) ? playerName : 'Gracz';
+
+      // Zapis w bazie danych
+      db.ref('opinie').push({
+          nick: nick,
+          tekst: text,
+          data: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString().slice(0,5)
+      });
+
+      document.getElementById('feedback-text').value = '';
+      alert("Dzięki za opinię!");
+  }
+
+  // POBIERANIE OPINII NA ŻYWO I ODŚWIEŻANIE LICZNIKA
+  db.ref('opinie').on('value', (snapshot) => {
+      const data = snapshot.val();
+      const listEl = document.getElementById('feedback-list');
+      const countEl = document.getElementById('feedback-count');
+      if (!listEl) return;
+      
+      listEl.innerHTML = '';
+
+      if (!data) {
+          listEl.innerHTML = '<p style="color:#888; text-align:center;">Brak opinii. Bądź pierwszy!</p>';
+          if (countEl) countEl.innerText = 0;
+          return;
+      }
+
+      const entries = Object.values(data).reverse(); // Najnowsze na górze
+      if (countEl) countEl.innerText = entries.length;
+
+      entries.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'feedback-item';
+          div.innerHTML = `<b>${item.nick}</b> <span>${item.data}</span><br>${item.tekst}`;
+          listEl.appendChild(div);
+      });
+  });
+</script>
 </body>
 </html>

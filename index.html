@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Strona Pana Piotra</title>
+    <title>Pan Piotr Clicker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -124,11 +124,26 @@
             100% { transform: rotate(360deg); }
         }
 
+        .loading-texts {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .loading-texts p {
+            margin: 5px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .text-1 { color: #ffcc00; }
+        .text-2 { color: #00ffcc; }
+        .text-3 { color: #ff0055; }
+
         .progress-bar-container {
-            width: 250px;
-            height: 12px;
+            width: 280px;
+            height: 14px;
             background: #222;
-            border-radius: 6px;
+            border-radius: 7px;
             overflow: hidden;
             border: 1px solid #00ffcc;
             margin-top: 15px;
@@ -137,7 +152,7 @@
         .progress-bar {
             width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, #ff0055, #00ffcc);
+            background: linear-gradient(90deg, #ff0055, #ffcc00, #00ffcc);
             transition: width 0.1s linear;
         }
 
@@ -498,10 +513,14 @@
         </div>
     </div>
 
-    <!-- EKRAN ŁADOWANIA -->
+    <!-- EKRAN ŁADOWANIA Z TEKSTAMI -->
     <div id="loading-screen">
         <div class="spinner"></div>
-        <h2 style="color: #00ffcc; margin: 0;">Ładowanie gry...</h2>
+        <div class="loading-texts">
+            <p class="text-1">siemano kolano</p>
+            <p class="text-2">ej byku poleć moją gre zajomym</p>
+            <p class="text-3">TikTok:Pt_pantymon</p>
+        </div>
         <div class="progress-bar-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
@@ -665,14 +684,14 @@
             localStorage.setItem('clicker_current_player', playerName);
             document.getElementById('login-screen').style.display = 'none';
             
-            // WŁĄCZENIE EKRANU ŁADOWANIA
+            // WŁĄCZENIE EKRANU ŁADOWANIA Z DŁUŻSZYM CZASEM
             const loadingScreen = document.getElementById('loading-screen');
             const progressBar = document.getElementById('progress-bar');
             loadingScreen.style.display = 'flex';
             
             let progress = 0;
             const loadingInterval = setInterval(() => {
-                progress += 5;
+                progress += 1;
                 progressBar.style.width = progress + '%';
                 
                 if (progress >= 100) {
@@ -687,7 +706,7 @@
                     if (unlockedCodes['pan piotr']) showKingerAtScore();
                     if (unlockedCodes['dvd']) applyDvdSpeedup();
                 }
-            }, 75); // Czas ładowania (ok. 1.5 sekundy)
+            }, 45); // Wydłużony czas ładowania (ok. 4.5 sekundy)
         }
 
         document.getElementById('nickname-input').addEventListener('keypress', function (e) {

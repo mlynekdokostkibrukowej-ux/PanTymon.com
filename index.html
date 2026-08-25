@@ -238,7 +238,7 @@
         }
         .click-img:active { transform: scale(0.9); }
 
-        /* LATAJĄCY BONUS - POPRAWIONY Z-INDEX (ZAWSIZE NA WIERZCHU) */
+        /* LATAJĄCY BONUS */
         .bonus-img {
             position: absolute;
             width: 80px;
@@ -294,7 +294,6 @@
         }
         .footer-disclaimer a { color: #00ffcc; text-decoration: none; }
 
-        /* ZMIANA: Nagłówki i teksty nie blokują kliknięć myszką */
         .instruction, h1 { 
             position: relative; 
             z-index: 1; 
@@ -368,7 +367,7 @@
 
     <p class="instruction">Klikaj w obrazek jak najszybciej!</p>
 
-    <!-- AUDIO: MUZYKA (LOOP), DŹWIĘKI JEDNORAZOWE (BEZ LOOP) -->
+    <!-- AUDIO -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
     <audio id="jejAudio" preload="auto" src="jej.mp3"></audio>
     <audio id="lolAudio" preload="auto" src="lol.mp3"></audio>
@@ -470,7 +469,6 @@
         function submitCode() {
             const codeInput = document.getElementById('promo-code-input').value.trim().toLowerCase();
 
-            // Domyślny widok modalny (obrazek zamiast wideo)
             unlockImg.style.display = 'inline-block';
             unlockVideo.style.display = 'none';
 
@@ -502,11 +500,9 @@
                     obj.dy *= 2.5;
                 });
 
-                // Dźwięk lol.mp3
                 lolAudio.currentTime = 0;
                 lolAudio.play().catch(e => console.log("Błąd odtwarzania Lol:", e));
 
-                // Pokaż wideo lol.mp4
                 unlockImg.style.display = 'none';
                 unlockVideo.style.display = 'block';
                 unlockVideo.currentTime = 0;
@@ -549,7 +545,7 @@
             showKingerAtScore();
         }
 
-        // LICZNIK KINGERA DOWOŻĄCY +10 PUNKTÓW
+        /* LICZNIK KINGERA */
         setInterval(() => {
             if (hasPanPiotrItem) {
                 score += 10;
@@ -565,7 +561,7 @@
             }
         }, 15000);
 
-        /* --- LATAJĄCY BONUS (OBRAZECZEK.JPG - 500 PKT) --- */
+        /* LATAJĄCY BONUS */
         function scheduleNextBonus() {
             const randomTime = Math.floor(Math.random() * 15000) + 15000;
             setTimeout(spawnBonusImage, randomTime);
@@ -618,7 +614,7 @@
             scheduleNextBonus();
         }
 
-        /* --- LOGIKA LEADERBOARDU --- */
+        /* RANKING */
         function getLeaderboard() {
             return JSON.parse(localStorage.getItem('clicker_leaderboard')) || [];
         }
@@ -666,7 +662,7 @@
 
         renderLeaderboard();
 
-        /* --- LOGIKA KLIKANIA I NAPISÓW --- */
+        /* KLIKANIE I ANIMACJE */
         let clickTimestamps = [];
         let maxCps = 0;
         let isCheating = false;
@@ -732,7 +728,7 @@
             }
         }
 
-        // CPS Checker
+        /* LICZNIK CPS */
         setInterval(() => {
             const now = Date.now();
             clickTimestamps = clickTimestamps.filter(timestamp => now - timestamp <= 1000);
@@ -762,6 +758,7 @@
             btn.style.top = y + 'px';
         }
 
+        /* LATAJĄCE DVD */
         const dvdImages = document.querySelectorAll('.dvd-img');
         const dvdObjects = [];
 

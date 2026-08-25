@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Pan Piotr Clicker</title>
+    <title>Strona Pana Piotra</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,180 +13,1109 @@
             margin: 0;
             overflow: hidden;
             user-select: none;
+            transition: background-color 0.3s ease;
         }
 
-        /* PRZYCISK OPINII - obniżony, żeby nie nachodził na ranking */
-        .feedback-btn {
-            position: absolute;
-            top: 135px;
-            left: 15px;
-            background: #ffcc00;
-            color: #1a1a1a;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
+        /* EKRAN STARTOWY / LOGOWANIA */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 15, 15, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.3);
+            text-align: center;
+        }
+
+        .login-box h1 {
+            color: #00ffcc;
+            margin: 0 0 10px 0;
+            font-size: 32px;
+        }
+
+        .login-box h2 {
+            margin: 0 0 10px 0;
+            color: #ffffff;
+            font-size: 24px;
+        }
+
+        .login-box p.instruction {
+            color: #ffcc00;
             font-weight: bold;
-            font-size: 13px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .login-box p.subtext {
+            color: #ccc;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .login-box input, .code-box input {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: #222;
+            color: white;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+            width: 200px;
+        }
+
+        .login-box button, .code-box button {
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            background: #ff0055;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .login-box button:hover {
+            transform: scale(1.05);
+        }
+
+        /* EKRAN ŁADOWANIA (LOADING SCREEN) */
+        #loading-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.98);
+            z-index: 101;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #222;
+            border-top: 6px solid #00ffcc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar-container {
+            width: 250px;
+            height: 12px;
+            background: #222;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #00ffcc;
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0055, #00ffcc);
+            transition: width 0.1s linear;
+        }
+
+        /* PRZYCISK MUZYKI (GŁOŚNICZEK) */
+        .music-btn {
+            position: absolute;
+            top: 15px;
+            right: 290px;
+            background: #222;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 20px;
             cursor: pointer;
             z-index: 25;
-            box-sizing: border-box;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background 0.2s;
         }
 
-        /* OKIENKO OPINII (MODAL) */
-        #feedback-modal {
+        .music-btn:hover {
+            transform: scale(1.1);
+            background: #333;
+        }
+
+        /* PRZYCISK I MODAL DLA KODÓW */
+        .code-btn {
+            position: absolute;
+            top: 15px;
+            right: 200px;
+            background: #00ffcc;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 25;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+            height: 42px;
+            box-sizing: border-box;
+        }
+
+        #code-modal, #unlock-modal {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.85);
-            z-index: 96;
+            z-index: 95;
             justify-content: center;
             align-items: center;
         }
 
-        .feedback-box {
+        .code-box {
             background: #222;
-            padding: 20px;
+            padding: 25px;
             border-radius: 12px;
             border: 2px solid #ffcc00;
-            width: 320px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
+            text-align: center;
             position: relative;
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
         }
 
-        .feedback-box h3 { color: #ffcc00; margin-top: 0; }
-        .feedback-box textarea {
-            width: 90%;
-            height: 60px;
-            background: #111;
+        .close-code {
+            position: absolute;
+            top: 5px; right: 10px;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* ANIMACJA ODBLOKOWANIA */
+        .unlock-box {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 0 50px #ffcc00;
+            text-align: center;
+            animation: unlockAnim 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 80vw;
+        }
+
+        @keyframes unlockAnim {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .unlock-box img, .unlock-box video {
+            width: 250px;
+            max-width: 100%;
+            border-radius: 15px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 0 25px #ffcc00;
+            margin: 15px 0;
+        }
+
+        .unlock-box img {
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px #ffcc00; }
+            100% { box-shadow: 0 0 35px #ffcc00; }
+        }
+
+        /* SKLEP Z ULEPSZENIAMI Z MOŻLIWOŚCIĄ ZWIJANIA */
+        .shop-wrapper {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            align-items: flex-start;
+            z-index: 25;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shop-wrapper.collapsed {
+            transform: translateX(calc(100% - 30px));
+        }
+
+        .shop-toggle-btn {
+            background: #ff0055;
             color: white;
-            border: 1px solid #555;
-            border-radius: 6px;
-            padding: 8px;
-            resize: none;
-            margin-bottom: 10px;
+            border: 1px solid #ff0055;
+            border-right: none;
+            width: 30px;
+            height: 40px;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: -3px 0 10px rgba(255, 0, 85, 0.3);
+            outline: none;
+            user-select: none;
+            transition: background 0.2s;
         }
 
-        .feedback-list {
-            margin-top: 15px;
-            max-height: 200px;
-            overflow-y: auto;
+        .shop-toggle-btn:hover {
+            background: #e0004c;
+        }
+
+        .shop-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 12px;
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+            border-bottom-left-radius: 12px;
+            border: 1px solid #ff0055;
+            width: 170px;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+            box-sizing: border-box;
+        }
+
+        .shop-container h3 { margin: 0 0 10px 0; color: #ff0055; font-size: 15px; }
+
+        .shop-btn {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 6px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #ff0055;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: 0.2s;
+        }
+
+        .shop-btn:hover { background: #ff0055; }
+
+        /* POWIADOMIENIE O OSIĄGNIĘCIU */
+        #achievement-toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffcc00;
+            color: #111;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 0 20px #ffcc00;
+            z-index: 999;
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* STATYSTYKI I GRA */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 20;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #kinger-score-icon {
+            display: none;
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #ffcc00;
+            box-shadow: 0 0 10px #ffcc00;
+            animation: floatIcon 2s infinite ease-in-out;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        #score-board { color: #00ffcc; text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
+        #cps-board { color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+        #max-cps-board { color: #ff0055; text-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
+
+        .leaderboard {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 12px 16px;
+            border-radius: 12px;
             text-align: left;
-            border-top: 1px solid #444;
-            padding-top: 10px;
-        }
-
-        .feedback-item {
-            background: #333;
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 8px;
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            z-index: 25;
             font-size: 13px;
+            min-width: 180px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
-        .feedback-item b { color: #00ffcc; }
-        .feedback-item span { color: #aaa; font-size: 10px; float: right; }
 
-        /* Style interfejsu gry */
-        .ranking-box {
-            position: absolute; top: 15px; left: 15px; background: #222;
-            border: 2px solid #ffcc00; padding: 10px; border-radius: 10px;
-            width: 200px; text-align: left; z-index: 25;
+        .leaderboard h3 { 
+            margin: 0 0 8px 0; color: #00ffcc; font-size: 15px; text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 4px;
         }
-        .score-box {
-            font-size: 20px; font-weight: bold; background: #111;
-            padding: 10px 20px; border-radius: 10px; display: inline-block;
-            border: 2px solid #00ffcc; margin: 0 5px;
+
+        .leaderboard ol { margin: 0; padding-left: 20px; }
+        .leaderboard li { margin-bottom: 4px; color: #ddd; }
+
+        .change-nick-btn {
+            display: block; margin: 8px auto 0 auto; background: #ff0055;
+            color: white; border: none; padding: 4px 8px; border-radius: 6px;
+            font-size: 11px; cursor: pointer; font-weight: bold;
         }
-        .clicker-img {
-            width: 140px; height: 140px; border-radius: 50%;
-            cursor: pointer; position: absolute; left: 50%; top: 50%;
-            transform: translate(-50%, -50%); border: 3px solid #ff0055;
-            box-shadow: 0 0 20px #ff0055; object-fit: cover; z-index: 10;
+
+        #cheat-warning {
+            display: none; color: #ff0055; font-size: 20px; font-weight: bold;
+            position: relative; z-index: 25; background: rgba(0, 0, 0, 0.85);
+            padding: 8px 16px; border-radius: 10px; margin: 5px auto;
+            width: fit-content; border: 2px solid #ff0055;
+            animation: pulse 0.5s infinite alternate;
         }
-        .dvd-obj {
-            position: absolute; width: 140px; height: 140px;
-            object-fit: cover; border-radius: 10px; z-index: 5;
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
         }
+
+        .click-img {
+            width: 150px; height: auto; border-radius: 15px; cursor: pointer;
+            box-shadow: 0 0 25px #ff0055; position: relative; z-index: 20;
+            transition: transform 0.05s ease; margin-top: 20px;
+            touch-action: manipulation;
+        }
+
+        .click-img:active { transform: scale(0.9); }
+
+        .bonus-img {
+            position: absolute;
+            width: 80px;
+            height: auto;
+            border-radius: 10px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 0 20px #ffcc00;
+            cursor: pointer;
+            z-index: 9999;
+            transition: transform 0.1s;
+        }
+
+        .bonus-img:hover { transform: scale(1.15); }
+
+        .floating-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffcc;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #000;
+            pointer-events: none;
+            z-index: 60;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
+        }
+
+        .particle {
+            position: absolute; width: 40px; height: auto; pointer-events: none;
+            z-index: 30; border-radius: 5px;
+        }
+
+        .dvd-img {
+            position: absolute; width: 140px; height: auto; border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); z-index: 5;
+        }
+
+        .moving-btn {
+            position: absolute; padding: 15px 30px; font-size: 18px; font-weight: bold;
+            color: white; background-color: #ff0055; border: none; border-radius: 30px;
+            cursor: pointer; z-index: 10; transition: top 0.1s ease, left 0.1s ease;
+        }
+
+        .footer-disclaimer {
+            position: absolute; bottom: 10px; right: 15px; font-size: 12px;
+            color: rgba(255, 255, 255, 0.7); background: rgba(0, 0, 0, 0.6);
+            padding: 6px 12px; border-radius: 8px; z-index: 25;
+        }
+
+        .footer-disclaimer a { color: #00ffcc; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <!-- RANKING I WYNIKI -->
-    <div class="ranking-box">
-        <h4 style="margin:0 0 5px 0; color:#ffcc00;">🏆 Ranking Top 5</h4>
-        <div id="ranking-list">1. Gracz: 0 pkt</div>
-        <button onclick="changeNick()" style="margin-top:8px; background:#ff0055; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Zmień Nick</button>
-    </div>
-
-    <!-- PRZYCISK OPINII -->
-    <button class="feedback-btn" onclick="openFeedbackModal()">💬 OPINIE (<span id="feedback-count">0</span>)</button>
-
-    <!-- OKIENKO OPINII -->
-    <div id="feedback-modal">
-        <div class="feedback-box">
-            <span class="close-code" onclick="closeFeedbackModal()" style="cursor:pointer; position:absolute; right:12px; top:8px; font-size:20px; color:#fff;">&times;</span>
-            <h3>Napisz opinię o grze</h3>
-            <textarea id="feedback-text" placeholder="Wpisz co myślisz o grze..." maxlength="150"></textarea>
-            <button onclick="sendFeedback()" style="background:#00ffcc; color:#111; font-weight:bold; border:none; padding:8px; border-radius:6px; cursor:pointer;">Wyślij opinię</button>
-            
-            <h4 style="margin: 15px 0 5px 0; color: #fff;">Publiczne opinie:</h4>
-            <div class="feedback-list" id="feedback-list">
-                <p style="color:#888; text-align:center;">Ładowanie opinii...</p>
-            </div>
+    <!-- EKRAN STARTOWY / LOGOWANIA -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>Witaj na mojej stronie!</h1>
+            <h2>Clicker Pana Piotra</h2>
+            <p class="instruction">Klikaj w obrazek jak najszybciej!</p>
+            <p class="subtext">Wpisz swój nick, aby rozpocząć grę:</p>
+            <input type="text" id="nickname-input" placeholder="Twój Nick..." maxlength="15">
+            <br>
+            <button onclick="startGame()">Rozpocznij grę!</button>
         </div>
     </div>
 
-    <div>
-        <div class="score-box">Punkty: <span id="score">0</span></div>
-        <div class="score-box">CPS: <span id="cps">0</span></div>
+    <!-- EKRAN ŁADOWANIA -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <h2 style="color: #00ffcc; margin: 0;">Ładowanie gry...</h2>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
     </div>
 
-    <!-- GŁÓWNY KLIKACZ -->
-    <img src="kinger.jpg" class="clicker-img" id="clicker" onclick="clickAction()">
+    <!-- PRZYCISK MUZYKI -->
+    <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Włącz/Wyłącz Muzykę">🔊</button>
 
-    <!-- RUCHOME OBIEKTY TŁA (DVD) -->
-    <img src="obrazekzek.jpg" class="dvd-obj" id="dvd1">
-    <img src="obrazek.png" class="dvd-obj" id="dvd2">
+    <!-- PRZYCISK DO KODÓW -->
+    <button class="code-btn" onclick="openCodeModal()">KOD</button>
 
-    <!-- Skrypty gry -->
+    <!-- SKLEP Z MOŻLIWOŚCIĄ SCHOWANIA -->
+    <div class="shop-wrapper" id="shop-wrapper">
+        <button class="shop-toggle-btn" id="shop-toggle-btn" onclick="toggleShop()" title="Zwiń / Rozwiń sklep">▶</button>
+        <div class="shop-container">
+            <h3>🛒 Sklep CPS</h3>
+            <button class="shop-btn" onclick="buyUpgrade('cursor', 50, 1)">
+                Autoklikacz (+1 CPS)<br><small>Koszt: <span id="cost-cursor">50</span> pkt</small>
+            </button>
+            <button class="shop-btn" onclick="buyUpgrade('farm', 300, 5)">
+                Młynek Punktów (+5 CPS)<br><small>Koszt: <span id="cost-farm">300</span> pkt</small>
+            </button>
+        </div>
+    </div>
+
+    <!-- POWIADOMIENIE O OSIĄGNIĘCIU -->
+    <div id="achievement-toast">🏆 Osiągnięcie odblokowane!</div>
+
+    <!-- OKIENKO DO KODU -->
+    <div id="code-modal">
+        <div class="code-box">
+            <span class="close-code" onclick="closeCodeModal()">&times;</span>
+            <h3 style="color: #ffcc00; margin-top:0;">Wpisz Kod Promo</h3>
+            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>pan piotr</i>, <i>dvd</i>, <i>darmowe punkty</i>, <i>punkty</i></p>
+            <input type="text" id="promo-code-input" placeholder="Kod...">
+            <br>
+            <button onclick="submitCode()">Użyj kodu</button>
+        </div>
+    </div>
+
+    <!-- POP-UP ODBLOKOWANIA -->
+    <div id="unlock-modal">
+        <div class="unlock-box">
+            <h2 id="unlock-title" style="color: #ffcc00; margin: 0;">🎉 ODBLOKOWANO! 🎉</h2>
+            <p id="unlock-subtitle" style="color: #00ffcc; font-size: 18px; margin: 5px 0;">Postać: Kinger</p>
+            <img id="unlock-img" src="kinger.jpg" alt="Odblokowano">
+            <video id="unlock-video" src="lol.mp4" style="display: none;" controls></video>
+            <p id="unlock-desc" style="color: #aaa; font-size: 14px; margin-bottom: 15px;">Daje +10 punktów co 15 sekund!</p>
+            <button onclick="closeUnlockModal()" style="background: #00ffcc; color: #111; font-weight: bold; padding: 10px 25px; border: none; border-radius: 8px; cursor: pointer;">SUPER!</button>
+        </div>
+    </div>
+
+    <!-- TABELA RANKINGOWA -->
+    <div class="leaderboard">
+        <h3>🏆 Ranking Top 5</h3>
+        <ol id="high-scores-list">
+            <li>Brak wyników</li>
+        </ol>
+        <button class="change-nick-btn" onclick="changeNickname()">Zmień Nick</button>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-box" id="score-board">
+            <img src="kinger.jpg" id="kinger-score-icon" title="Kinger aktywny (+10 pkt / 15s)">
+            Punkty: <span id="score">0</span>
+        </div>
+        <div class="stat-box" id="cps-board">CPS: <span id="cps">0.0</span></div>
+        <div class="stat-box" id="max-cps-board">MAX CPS: <span id="max-cps">0.0</span></div>
+    </div>
+
+    <div id="cheat-warning">⚠️ WYKRYTO AUTO-CLICKERA! BLOKADA PUNKTY WSTRZYMANE! ⚠️</div>
+
+    <!-- AUDIO -->
+    <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
+    <audio id="jejAudio" preload="auto" src="jej.mp3"></audio>
+    <audio id="lolAudio" preload="auto" src="lol.mp3"></audio>
+    <audio id="bonusAudio" preload="auto" src="bonus.mp3"></audio>
+    <audio id="latwoAudio" preload="auto" src="latwo.mp3"></audio>
+
+    <div>
+        <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
+    </div>
+
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+
+    <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
+
+    <div class="footer-disclaimer">
+        Strona powstała w celach humorystycznych. Wszystkie zażalenia proszę zgłaszać na: 
+        <a href="mailto:mlynek.do.kostki.brukowej@gmail.com">mlynek.do.kostki.brukowej@gmail.com</a>
+    </div>
+
     <script>
-        let score = 0;
-        let playerName = localStorage.getItem('panPiotrNick') || 'Gracz';
+        const audio = document.getElementById('bgAudio');
+        const jejAudio = document.getElementById('jejAudio');
+        const lolAudio = document.getElementById('lolAudio');
+        const bonusAudio = document.getElementById('bonusAudio');
+        const latwoAudio = document.getElementById('latwoAudio');
+        const unlockVideo = document.getElementById('unlock-video');
+        const unlockImg = document.getElementById('unlock-img');
+        const targetImg = document.getElementById('targetImg');
+        const musicBtn = document.getElementById('music-btn');
+
+        // WYMUSZENIE EKRANU STARTOWY PRZY KAŻDYM WEJŚCIU/ODŚWIEŻENIU
+        let playerName = '';
         
-        function clickAction() {
-            score++;
-            document.getElementById('score').innerText = score;
+        let score = parseInt(localStorage.getItem('clicker_saved_score')) || 0;
+        let maxCps = parseFloat(localStorage.getItem('clicker_max_cps')) || 0;
+        let unlockedCodes = JSON.parse(localStorage.getItem('clicker_unlocked_codes')) || {};
+        let isMuted = localStorage.getItem('clicker_music_muted') === 'true';
+
+        document.getElementById('score').innerText = score;
+        document.getElementById('max-cps').innerText = maxCps.toFixed(1);
+
+        audio.muted = isMuted;
+        musicBtn.innerText = isMuted ? '🔇' : '🔊';
+
+        // POBIERANIE STANU ZWINIĘCIA SKLEPU Z PAMIĘCI PRZEGLĄDARKI
+        let isShopCollapsed = localStorage.getItem('clicker_shop_collapsed') === 'true';
+        if (isShopCollapsed) {
+            document.getElementById('shop-wrapper').classList.add('collapsed');
+            document.getElementById('shop-toggle-btn').innerText = '◀';
+        } else {
+            document.getElementById('shop-toggle-btn').innerText = '▶';
         }
 
-        function changeNick() {
-            let newNick = prompt("Podaj swój nick:", playerName);
-            if (newNick) {
-                playerName = newNick;
-                localStorage.setItem('panPiotrNick', playerName);
-                document.getElementById('ranking-list').innerText = `1. ${playerName}: ${score} pkt`;
+        function toggleShop() {
+            const wrapper = document.getElementById('shop-wrapper');
+            const btn = document.getElementById('shop-toggle-btn');
+            wrapper.classList.toggle('collapsed');
+            isShopCollapsed = wrapper.classList.contains('collapsed');
+            localStorage.setItem('clicker_shop_collapsed', isShopCollapsed);
+            btn.innerText = isShopCollapsed ? '◀' : '▶';
+        }
+
+        // Jeśli w pamięci był już wcześniej nick, wpisz go do okienka jako propozycję
+        const savedPreviousNick = localStorage.getItem('clicker_current_player');
+        if (savedPreviousNick) {
+            document.getElementById('nickname-input').value = savedPreviousNick;
+        }
+
+        function toggleMusic() {
+            isMuted = !isMuted;
+            audio.muted = isMuted;
+            localStorage.setItem('clicker_music_muted', isMuted);
+            musicBtn.innerText = isMuted ? '🔇' : '🔊';
+        }
+
+        function startGame() {
+            const input = document.getElementById('nickname-input').value.trim();
+            if (input === "") {
+                alert("Proszę wpisać nick!");
+                return;
+            }
+            
+            playerName = input;
+            localStorage.setItem('clicker_current_player', playerName);
+            document.getElementById('login-screen').style.display = 'none';
+            
+            // WŁĄCZENIE EKRANU ŁADOWANIA
+            const loadingScreen = document.getElementById('loading-screen');
+            const progressBar = document.getElementById('progress-bar');
+            loadingScreen.style.display = 'flex';
+            
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    loadingScreen.style.display = 'none';
+                    
+                    audio.play().catch(error => console.log("Błąd audio:", error));
+
+                    renderLeaderboard();
+                    scheduleNextBonus();
+                    
+                    if (unlockedCodes['pan piotr']) showKingerAtScore();
+                    if (unlockedCodes['dvd']) applyDvdSpeedup();
+                }
+            }, 75); // Czas ładowania (ok. 1.5 sekundy)
+        }
+
+        document.getElementById('nickname-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') startGame();
+        });
+
+        function changeNickname() {
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+
+        targetImg.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            addPointAndChangeColor({ clientX: touch.clientX, clientY: touch.clientY });
+        }, { passive: false });
+
+        let autoCps = parseInt(localStorage.getItem('clicker_auto_cps')) || 0;
+        let upgradeCosts = {
+            cursor: parseInt(localStorage.getItem('cost_cursor')) || 50,
+            farm: parseInt(localStorage.getItem('cost_farm')) || 300
+        };
+
+        document.getElementById('cost-cursor').innerText = upgradeCosts.cursor;
+        document.getElementById('cost-farm').innerText = upgradeCosts.farm;
+
+        function buyUpgrade(type, baseCost, cpsAmount) {
+            let currentCost = upgradeCosts[type];
+            if (score >= currentCost) {
+                score -= currentCost;
+                autoCps += cpsAmount;
+                
+                upgradeCosts[type] = Math.floor(currentCost * 1.5);
+                
+                localStorage.setItem('clicker_saved_score', score);
+                localStorage.setItem('clicker_auto_cps', autoCps);
+                localStorage.setItem(`cost_${type}`, upgradeCosts[type]);
+
+                document.getElementById('score').innerText = score;
+                document.getElementById(`cost-${type}`).innerText = upgradeCosts[type];
+                updateScoreInLeaderboard(score);
+
+                showAchievement(`Kupiono ulepszenie! (+${cpsAmount} CPS)`);
+            } else {
+                alert("Masz za mało punktów!");
             }
         }
 
-        // Animacja DVD w tle
-        const dvdObjects = [
-            { element: document.getElementById('dvd1'), x: 100, y: 100, dx: 2, dy: 2 },
-            { element: document.getElementById('dvd2'), x: 300, y: 200, dx: -2, dy: 1.5 }
-        ];
+        setInterval(() => {
+            if (autoCps > 0 && playerName !== '') {
+                score += autoCps;
+                document.getElementById('score').innerText = score;
+                localStorage.setItem('clicker_saved_score', score);
+                updateScoreInLeaderboard(score);
+                checkAchievements();
+            }
+        }, 1000);
+
+        const unlockedAchievements = JSON.parse(localStorage.getItem('clicker_achievements')) || {};
+
+        function checkAchievements() {
+            if (score >= 100 && !unlockedAchievements['100_pts']) {
+                unlockAchieve('100_pts', '🏆 Pierwsza setka punktów!');
+            }
+            if (score >= 1000 && !unlockedAchievements['1000_pts']) {
+                unlockAchieve('1000_pts', '🚀 Klikacz Tysiąclecia!');
+            }
+        }
+
+        function unlockAchieve(id, message) {
+            unlockedAchievements[id] = true;
+            localStorage.setItem('clicker_achievements', JSON.stringify(unlockedAchievements));
+            showAchievement(message);
+        }
+
+        function showAchievement(text) {
+            const toast = document.getElementById('achievement-toast');
+            toast.innerText = text;
+            toast.style.bottom = '30px';
+            setTimeout(() => { toast.style.bottom = '-100px'; }, 3000);
+        }
+
+        function openCodeModal() {
+            document.getElementById('code-modal').style.display = 'flex';
+        }
+
+        function closeCodeModal() {
+            document.getElementById('code-modal').style.display = 'none';
+        }
+
+        function closeUnlockModal() {
+            document.getElementById('unlock-modal').style.display = 'none';
+            unlockVideo.pause();
+            unlockVideo.currentTime = 0;
+        }
+
+        function resetScoreToZero() {
+            score = 0;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('clicker_saved_score', score);
+
+            if (playerName) {
+                let leaderboard = getLeaderboard();
+                const existingPlayerIndex = leaderboard.findIndex(entry => entry.name === playerName);
+                if (existingPlayerIndex !== -1) {
+                    leaderboard[existingPlayerIndex].score = 0;
+                    localStorage.setItem('clicker_leaderboard', JSON.stringify(leaderboard));
+                    renderLeaderboard();
+                }
+            }
+        }
+
+        function submitCode() {
+            const codeInput = document.getElementById('promo-code-input').value.trim().toLowerCase();
+
+            unlockImg.style.display = 'inline-block';
+            unlockVideo.style.display = 'none';
+
+            if (codeInput === 'pan piotr') {
+                if (unlockedCodes['pan piotr']) {
+                    alert('Ten kod został już użyty!');
+                } else {
+                    unlockedCodes['pan piotr'] = true;
+                    localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+                    
+                    closeCodeModal();
+
+                    jejAudio.currentTime = 0;
+                    jejAudio.play().catch(e => console.log("Błąd audio:", e));
+                    
+                    document.getElementById('unlock-title').innerText = "🎉 ODBLOKOWANO! 🎉";
+                    document.getElementById('unlock-subtitle').innerText = "Postać: Kinger";
+                    unlockImg.src = "kinger.jpg";
+                    document.getElementById('unlock-desc').innerText = "Daje +10 punktów co 15 sekund!";
+                    document.getElementById('unlock-modal').style.display = 'flex';
+
+                    showKingerAtScore();
+                }
+            } 
+            else if (codeInput === 'dvd') {
+                if (unlockedCodes['dvd']) {
+                    alert('Ten kod jest już aktywny!');
+                } else {
+                    unlockedCodes['dvd'] = true;
+                    localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+
+                    closeCodeModal();
+                    applyDvdSpeedup();
+
+                    lolAudio.currentTime = 0;
+                    lolAudio.play().catch(e => console.log("Błąd audio:", e));
+
+                    unlockImg.style.display = 'none';
+                    unlockVideo.style.display = 'block';
+                    unlockVideo.currentTime = 0;
+                    unlockVideo.play().catch(e => console.log("Błąd wideo:", e));
+
+                    document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
+                    document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
+                    document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz super szybko!";
+                    document.getElementById('unlock-modal').style.display = 'flex';
+                }
+            } 
+            else if (codeInput === 'darmowe punkty') {
+                closeCodeModal();
+                resetScoreToZero();
+                alert('🤡 DARMOWYCH PUNKTÓW NIE MA! Zostałeś oszukany i Twoje punkty wynoszą teraz 0! 🤡');
+            } 
+            else if (codeInput === 'punkty') {
+                closeCodeModal();
+                resetScoreToZero();
+
+                latwoAudio.currentTime = 0;
+                latwoAudio.play().catch(e => console.log("Błąd audio:", e));
+
+                document.getElementById('unlock-title').innerText = "💀 KOD OSZUSTWO 💀";
+                document.getElementById('unlock-subtitle').innerText = "Błąd systemu: Punkty wyczyszczone!";
+                unlockImg.src = "obrazek.png";
+                document.getElementById('unlock-desc').innerText = "Chciałeś łatwych punktów? Twój wynik to teraz 0!";
+                document.getElementById('unlock-modal').style.display = 'flex';
+            }
+            else {
+                alert('Nieprawidłowy kod!');
+            }
+            document.getElementById('promo-code-input').value = '';
+        }
+
+        function showKingerAtScore() {
+            document.getElementById('kinger-score-icon').style.display = 'inline-block';
+        }
+
+        function applyDvdSpeedup() {
+            dvdObjects.forEach(obj => {
+                if (!obj.isSpeededUp) {
+                    obj.dx *= 2.5;
+                    obj.dy *= 2.5;
+                    obj.isSpeededUp = true;
+                }
+            });
+        }
+
+        setInterval(() => {
+            if (unlockedCodes['pan piotr'] && playerName !== '') {
+                score += 10;
+                document.getElementById('score').innerText = score;
+                localStorage.setItem('clicker_saved_score', score);
+                updateScoreInLeaderboard(score);
+                
+                const kingerIcon = document.getElementById('kinger-score-icon');
+                const rect = kingerIcon.getBoundingClientRect();
+                
+                createFloatingText(rect.left + rect.width / 2, rect.top, "+10");
+                createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            }
+        }, 15000);
+
+        function scheduleNextBonus() {
+            const randomTime = Math.floor(Math.random() * 15000) + 15000;
+            setTimeout(spawnBonusImage, randomTime);
+        }
+
+        function spawnBonusImage() {
+            if (playerName === '') return; // Bonus pojawia się dopiero po zalogowaniu
+
+            const bonus = document.createElement('img');
+            bonus.src = 'obrazeczek.jpg';
+            bonus.className = 'bonus-img';
+
+            const startY = Math.random() * (window.innerHeight - 150);
+            const startX = -100;
+            const endX = window.innerWidth + 100;
+            const endY = Math.random() * (window.innerHeight - 150);
+
+            bonus.style.left = startX + 'px';
+            bonus.style.top = startY + 'px';
+
+            bonus.onclick = (e) => {
+                score += 500;
+                document.getElementById('score').innerText = score;
+                localStorage.setItem('clicker_saved_score', score);
+                updateScoreInLeaderboard(score);
+
+                bonusAudio.currentTime = 0;
+                bonusAudio.play().catch(e => console.log("Błąd audio:", e));
+
+                createFloatingText(e.clientX, e.clientY, "+500!", "#ffcc00");
+                createParticles(e.clientX, e.clientY);
+
+                bonus.remove();
+            };
+
+            document.body.appendChild(bonus);
+
+            const animation = bonus.animate([
+                { left: startX + 'px', top: startY + 'px', transform: 'rotate(0deg)' },
+                { left: endX + 'px', top: endY + 'px', transform: 'rotate(720deg)' }
+            ], {
+                duration: 4000,
+                easing: 'linear'
+            });
+
+            animation.onfinish = () => { if (bonus.parentNode) bonus.remove(); };
+            scheduleNextBonus();
+        }
+
+        function getLeaderboard() {
+            return JSON.parse(localStorage.getItem('clicker_leaderboard')) || [];
+        }
+
+        function updateScoreInLeaderboard(currentScore) {
+            if (!playerName) return;
+
+            let leaderboard = getLeaderboard();
+            const existingPlayerIndex = leaderboard.findIndex(entry => entry.name === playerName);
+
+            if (existingPlayerIndex !== -1) {
+                if (currentScore > leaderboard[existingPlayerIndex].score) {
+                    leaderboard[existingPlayerIndex].score = currentScore;
+                }
+            } else {
+                leaderboard.push({ name: playerName, score: currentScore });
+            }
+
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 5);
+
+            localStorage.setItem('clicker_leaderboard', JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const leaderboard = getLeaderboard();
+            const listElement = document.getElementById('high-scores-list');
+            listElement.innerHTML = '';
+
+            if (leaderboard.length === 0) {
+                listElement.innerHTML = '<li>Brak wyników</li>';
+                return;
+            }
+
+            leaderboard.forEach(entry => {
+                const li = document.createElement('li');
+                li.innerHTML = `<b>${entry.name}</b>: <span style="color:#00ffcc">${entry.score}</span> pkt`;
+                if (entry.name === playerName) li.style.color = '#ffcc00';
+                listElement.appendChild(li);
+            });
+        }
+
+        let clickTimestamps = [];
+        let isCheating = false;
+
+        function addPointAndChangeColor(event) {
+            if (isCheating || playerName === '') return;
+
+            score++;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('clicker_saved_score', score);
+
+            updateScoreInLeaderboard(score);
+            checkAchievements();
+
+            const now = Date.now();
+            clickTimestamps.push(now);
+
+            const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+            document.body.style.backgroundColor = randomColor;
+
+            createParticles(event.clientX, event.clientY);
+            createFloatingText(event.clientX, event.clientY, "+1");
+        }
+
+        function createFloatingText(x, y, text, customColor = "#00ffcc") {
+            const floatEl = document.createElement('div');
+            floatEl.className = 'floating-text';
+            floatEl.innerText = text;
+            floatEl.style.color = customColor;
+            floatEl.style.textShadow = `0 0 10px ${customColor}, 0 0 20px #000`;
+            floatEl.style.left = (x - 15) + 'px';
+            floatEl.style.top = (y - 20) + 'px';
+
+            document.body.appendChild(floatEl);
+            setTimeout(() => { floatEl.remove(); }, 800);
+        }
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('img');
+                particle.src = 'obrazeczek.jpg'; 
+                particle.classList.add('particle');
+                
+                particle.style.left = (x - 20) + 'px';
+                particle.style.top = (y - 20) + 'px';
+
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 50 + Math.random() * 100;
+                const destX = (Math.cos(angle) * speed);
+                const destY = (Math.sin(angle) * speed);
+
+                particle.animate([
+                    { transform: 'translate(0px, 0px) scale(1) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${destX}px, ${destY}px) scale(0.2) rotate(360deg)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0,0,0.2,1)'
+                });
+
+                setTimeout(() => { particle.remove(); }, 800);
+            }
+        }
+
+        setInterval(() => {
+            const now = Date.now();
+            clickTimestamps = clickTimestamps.filter(timestamp => now - timestamp <= 1000);
+            
+            const currentCps = clickTimestamps.length;
+            document.getElementById('cps').innerText = currentCps;
+
+            if (currentCps > 20) {
+                isCheating = true;
+                document.getElementById('cheat-warning').style.display = 'block';
+            } else if (currentCps < 5 && isCheating) {
+                isCheating = false;
+                document.getElementById('cheat-warning').style.display = 'none';
+            }
+
+            if (currentCps > maxCps && !isCheating) {
+                maxCps = currentCps;
+                document.getElementById('max-cps').innerText = maxCps;
+                localStorage.setItem('clicker_max_cps', maxCps);
+            }
+        }, 100);
+
+        function moveButton() {
+            const btn = document.getElementById('btn');
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 50);
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+        }
+
+        const dvdImages = document.querySelectorAll('.dvd-img');
+        const dvdObjects = [];
+
+        dvdImages.forEach((img) => {
+            dvdObjects.push({
+                element: img,
+                x: Math.random() * (window.innerWidth - 150),
+                y: Math.random() * (window.innerHeight - 150),
+                dx: (Math.random() > 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
+                dy: (Math.random() > 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
+                isSpeededUp: false
+            });
+        });
 
         function animateDVD() {
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
             dvdObjects.forEach(obj => {
+                const imgWidth = obj.element.clientWidth || 140;
+                const imgHeight = obj.element.clientHeight || 140;
+
                 obj.x += obj.dx;
                 obj.y += obj.dy;
 
-                if (obj.x + 140 >= screenWidth || obj.x <= 0) obj.dx *= -1;
-                if (obj.y + 140 >= screenHeight || obj.y <= 0) obj.dy *= -1;
+                if (obj.x + imgWidth >= screenWidth || obj.x <= 0) obj.dx *= -1;
+                if (obj.y + imgHeight >= screenHeight || obj.y <= 0) obj.dy *= -1;
 
                 obj.element.style.left = obj.x + 'px';
                 obj.element.style.top = obj.y + 'px';
@@ -194,77 +1123,8 @@
 
             requestAnimationFrame(animateDVD);
         }
+
         animateDVD();
     </script>
-
-    <!-- Biblioteki Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyDPd1grXMdHysx2oApr-oPyv-LL5kgWPIE",
-        authDomain: "pan-piotr-clicker-opinie.firebaseapp.com",
-        databaseURL: "https://pan-piotr-clicker-opinie-default-rtdb.firebaseio.com",
-        projectId: "pan-piotr-clicker-opinie",
-        storageBucket: "pan-piotr-clicker-opinie.firebasestorage.app",
-        messagingSenderId: "299267672814",
-        appId: "1:299267672814:web:1d24ddc412754def9e81ff"
-      };
-      
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-
-      function openFeedbackModal() {
-          document.getElementById('feedback-modal').style.display = 'flex';
-      }
-
-      function closeFeedbackModal() {
-          document.getElementById('feedback-modal').style.display = 'none';
-      }
-
-      function sendFeedback() {
-          const text = document.getElementById('feedback-text').value.trim();
-          if (!text) {
-              alert("Napisz coś przed wysłaniem!");
-              return;
-          }
-          
-          db.ref('opinie').push({
-              nick: playerName,
-              tekst: text,
-              data: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString().slice(0,5)
-          });
-
-          document.getElementById('feedback-text').value = '';
-          alert("Dzięki za opinię!");
-      }
-
-      db.ref('opinie').on('value', (snapshot) => {
-          const data = snapshot.val();
-          const listEl = document.getElementById('feedback-list');
-          const countEl = document.getElementById('feedback-count');
-          if (!listEl) return;
-          
-          listEl.innerHTML = '';
-
-          if (!data) {
-              listEl.innerHTML = '<p style="color:#888; text-align:center;">Brak opinii. Bądź pierwszy!</p>';
-              if (countEl) countEl.innerText = 0;
-              return;
-          }
-
-          const entries = Object.values(data).reverse();
-          if (countEl) countEl.innerText = entries.length;
-
-          entries.forEach(item => {
-              const div = document.createElement('div');
-              div.className = 'feedback-item';
-              div.innerHTML = `<b>${item.nick}</b> <span>${item.data}</span><br>${item.tekst}`;
-              listEl.appendChild(div);
-          });
-      });
-    </script>
-
 </body>
 </html>

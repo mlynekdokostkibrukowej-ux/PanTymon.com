@@ -4,6 +4,80 @@
     <meta charset="UTF-8">
     <title>Pan Piotr Clicker</title>
     <style>
+        /* PRZYCISK OPINII */
+.feedback-btn {
+    position: absolute;
+    top: 15px;
+    right: 380px;
+    background: #ffcc00;
+    color: #1a1a1a;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 25;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+/* OKIENKO OPINII */
+#feedback-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85);
+    z-index: 96;
+    justify-content: center;
+    align-items: center;
+}
+
+.feedback-box {
+    background: #222;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #ffcc00;
+    width: 320px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+}
+
+.feedback-box h3 { color: #ffcc00; margin-top: 0; }
+.feedback-box textarea {
+    width: 90%;
+    height: 60px;
+    background: #111;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 8px;
+    resize: none;
+    margin-bottom: 10px;
+}
+
+.feedback-list {
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+}
+
+.feedback-item {
+    background: #333;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.feedback-item b { color: #00ffcc; }
+.feedback-item span { color: #aaa; font-size: 10px; float: right; }
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -499,6 +573,23 @@
     </style>
 </head>
 <body>
+    <!-- PRZYCISK OPINII -->
+<button class="feedback-btn" onclick="openFeedbackModal()">💬 OPINIE (<span id="feedback-count">0</span>)</button>
+
+<!-- OKIENKO OPINII -->
+<div id="feedback-modal">
+    <div class="feedback-box">
+        <span class="close-code" onclick="closeFeedbackModal()">&times;</span>
+        <h3>Napisz opinię o grze</h3>
+        <textarea id="feedback-text" placeholder="Wpisz co myślisz o grze..." maxlength="150"></textarea>
+        <button onclick="sendFeedback()" style="background:#00ffcc; color:#111; font-weight:bold; border:none; padding:8px; border-radius:6px; cursor:pointer;">Wyślij opinię</button>
+        
+        <h4 style="margin: 15px 0 5px 0; color: #fff;">Publiczne opinie:</h4>
+        <div class="feedback-list" id="feedback-list">
+            <p style="color:#888; text-align:center;">Ładowanie opinii...</p>
+        </div>
+    </div>
+</div>
 
     <!-- EKRAN STARTOWY / LOGOWANIA -->
     <div id="login-screen">

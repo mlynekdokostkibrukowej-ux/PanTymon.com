@@ -84,13 +84,13 @@
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
         }
 
-        #code-modal {
+        #code-modal, #unlock-modal {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.8);
-            z-index: 90;
+            background: rgba(0,0,0,0.85);
+            z-index: 95;
             justify-content: center;
             align-items: center;
         }
@@ -112,35 +112,43 @@
             cursor: pointer;
         }
 
-        /* SEKCJA PRZEDMIOTÓW (EQUIPMENT) */
-        .item-container {
-            margin-top: 15px;
-            position: relative;
-            z-index: 20;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        /* ANIMACJA ODBLOKOWANIA (POP-UP) */
+        .unlock-box {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 0 50px #ffcc00;
+            text-align: center;
+            animation: unlockAnim 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .unlocked-item {
-            width: 70px;
-            height: 70px;
+        @keyframes unlockAnim {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .unlock-box img {
+            width: 130px;
+            height: 130px;
             object-fit: cover;
-            border: 2px solid #ffcc00;
-            border-radius: 10px;
-            box-shadow: 0 0 15px #ffcc00;
-            animation: bounce 2s infinite ease-in-out;
+            border-radius: 15px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 0 25px #ffcc00;
+            margin: 15px 0;
+            animation: pulseGlow 1.5s infinite alternate;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px #ffcc00; }
+            100% { box-shadow: 0 0 35px #ffcc00; }
         }
 
         /* STATYSTYKI I GRA */
         .stats-container {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
             position: relative;
             z-index: 20;
@@ -154,6 +162,26 @@
             font-size: 18px;
             font-weight: bold;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* KINGER PRZY LICZNIKU PUNKTÓW */
+        #kinger-score-icon {
+            display: none;
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #ffcc00;
+            box-shadow: 0 0 10px #ffcc00;
+            animation: floatIcon 2s infinite ease-in-out;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
 
         #score-board { color: #00ffcc; text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
@@ -261,6 +289,17 @@
         </div>
     </div>
 
+    <!-- POP-UP ODBLOKOWANIA (ANIMACJA + DŹWIĘK JEJ) -->
+    <div id="unlock-modal">
+        <div class="unlock-box">
+            <h2 style="color: #ffcc00; margin: 0;">🎉 ODBLOKOWANO! 🎉</h2>
+            <p style="color: #00ffcc; font-size: 18px; margin: 5px 0;">Postać: Kinger</p>
+            <img src="kinger.jpg" alt="Kinger">
+            <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">Daje +10 punktów co 15 sekund!</p>
+            <button onclick="closeUnlockModal()" style="background: #00ffcc; color: #111; font-weight: bold; padding: 10px 25px; border: none; border-radius: 8px; cursor: pointer;">SUPER!</button>
+        </div>
+    </div>
+
     <!-- TABELA RANKINGOWA -->
     <div class="leaderboard">
         <h3>🏆 Ranking Top 5</h3>
@@ -273,7 +312,11 @@
     <h1>Witaj na mojej stronie!</h1>
     
     <div class="stats-container">
-        <div class="stat-box" id="score-board">Punkty: <span id="score">0</span></div>
+        <!-- OBRAZEK KINGERA PRZY LICZNIKU -->
+        <div class="stat-box" id="score-board">
+            <img src="kinger.jpg" id="kinger-score-icon" title="Kinger aktywny (+10 pkt / 15s)">
+            Punkty: <span id="score">0</span>
+        </div>
         <div class="stat-box" id="cps-board">CPS: <span id="cps">0.0</span></div>
         <div class="stat-box" id="max-cps-board">MAX CPS: <span id="max-cps">0.0</span></div>
     </div>
@@ -282,15 +325,12 @@
 
     <p class="instruction">Klikaj w obrazek jak najszybciej!</p>
 
+    <!-- AUDIO: MUZYKA I JEJ -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
+    <audio id="jejAudio" preload="auto" src="jej.mp3"></audio>
 
     <div>
         <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
-    </div>
-
-    <!-- SEKCJA OD BAZOWYCH PRZEDMIOTÓW (Z KODÓW) -->
-    <div class="item-container" id="items-container">
-        <!-- Przedmiot Kingera pojawi się tutaj po wpisaniu kodu -->
     </div>
 
     <img class="dvd-img" src="obrazek.png" alt="Latające tło">
@@ -308,6 +348,7 @@
 
     <script>
         const audio = document.getElementById('bgAudio');
+        const jejAudio = document.getElementById('jejAudio');
         let playerName = localStorage.getItem('clicker_current_player') || '';
 
         if (playerName) {
@@ -337,7 +378,7 @@
             document.getElementById('login-screen').style.display = 'flex';
         }
 
-        /* --- LOGIKA KODÓW PROMO --- */
+        /* --- LOGIKA KODÓW PROMO I ODBLOKOWANIA --- */
         let hasPanPiotrItem = localStorage.getItem('code_pan_piotr_unlocked') === 'true';
 
         function openCodeModal() {
@@ -346,6 +387,10 @@
 
         function closeCodeModal() {
             document.getElementById('code-modal').style.display = 'none';
+        }
+
+        function closeUnlockModal() {
+            document.getElementById('unlock-modal').style.display = 'none';
         }
 
         function submitCode() {
@@ -357,9 +402,14 @@
                 } else {
                     hasPanPiotrItem = true;
                     localStorage.setItem('code_pan_piotr_unlocked', 'true');
-                    alert('Kod aktywowany! Otrzymujesz Kingera (+10 pkt co 15 sekund)!');
-                    unlockPanPiotrItem();
                     closeCodeModal();
+
+                    // Odtwarzanie dźwięku JEJ i animacja
+                    jejAudio.play().catch(e => console.log("Błąd odtwarzania Jej:", e));
+                    document.getElementById('unlock-modal').style.display = 'flex';
+
+                    // Pokaż ikonę przy liczniku
+                    showKingerAtScore();
                 }
             } else {
                 alert('Nieprawidłowy kod!');
@@ -367,23 +417,15 @@
             document.getElementById('promo-code-input').value = '';
         }
 
-        function unlockPanPiotrItem() {
-            const container = document.getElementById('items-container');
-            if (!document.getElementById('pan-piotr-item')) {
-                const img = document.createElement('img');
-                img.src = 'kinger.jpg'; // Obrazek Kingera z Twojego folderu
-                img.id = 'pan-piotr-item';
-                img.className = 'unlocked-item';
-                img.title = 'Kinger: +10 pkt co 15s';
-                container.appendChild(img);
-            }
+        function showKingerAtScore() {
+            document.getElementById('kinger-score-icon').style.display = 'inline-block';
         }
 
         if (hasPanPiotrItem) {
-            unlockPanPiotrItem();
+            showKingerAtScore();
         }
 
-        // Licznik dodający +10 pkt co 15 sekund
+        // Licznik dodający +10 pkt co 15 sekund dla Kingera
         setInterval(() => {
             if (hasPanPiotrItem) {
                 score += 10;

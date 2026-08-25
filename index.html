@@ -15,7 +15,7 @@
             user-select: none;
         }
 
-        /* PRZYCISK OPINII - umieszczony pod rankingiem po lewej stronie */
+        /* PRZYCISK OPINII - pod rankingiem po lewej stronie */
         .feedback-btn {
             position: absolute;
             top: 195px;
@@ -90,19 +90,42 @@
         .feedback-item b { color: #00ffcc; }
         .feedback-item span { color: #aaa; font-size: 10px; float: right; }
 
-        .footer-disclaimer {
-            position: absolute; bottom: 10px; right: 15px; font-size: 12px;
-            color: rgba(255, 255, 255, 0.7); background: rgba(0, 0, 0, 0.6);
-            padding: 6px 12px; border-radius: 8px; z-index: 25;
+        /* Style interfejsu gry */
+        .ranking-box {
+            position: absolute; top: 15px; left: 15px; background: #222;
+            border: 2px solid #ffcc00; padding: 10px; border-radius: 10px;
+            width: 200px; text-align: left; z-index: 25;
         }
-        .footer-disclaimer a { color: #00ffcc; text-decoration: none; }
+        .score-box {
+            font-size: 20px; font-weight: bold; background: #111;
+            padding: 10px 20px; border-radius: 10px; display: inline-block;
+            border: 2px solid #00ffcc; margin: 0 5px;
+        }
+        .clicker-img {
+            width: 140px; height: 140px; border-radius: 50%;
+            cursor: pointer; position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%); border: 3px solid #ff0055;
+            box-shadow: 0 0 20px #ff0055; object-fit: cover; z-index: 10;
+        }
+        .dvd-obj {
+            position: absolute; width: 140px; height: 140px;
+            object-fit: cover; border-radius: 10px; z-index: 5;
+        }
     </style>
 </head>
 <body>
 
-    <!-- PRZYCISK I OKIENKO OPINII -->
+    <!-- RANKING I WYNIKI -->
+    <div class="ranking-box">
+        <h4 style="margin:0 0 5px 0; color:#ffcc00;">🏆 Ranking Top 5</h4>
+        <div id="ranking-list">1. Gracz: 0 pkt</div>
+        <button onclick="changeNick()" style="margin-top:8px; background:#ff0055; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Zmień Nick</button>
+    </div>
+
+    <!-- PRZYCISK OPINII -->
     <button class="feedback-btn" onclick="openFeedbackModal()">💬 OPINIE (<span id="feedback-count">0</span>)</button>
 
+    <!-- OKIENKO OPINII -->
     <div id="feedback-modal">
         <div class="feedback-box">
             <span class="close-code" onclick="closeFeedbackModal()" style="cursor:pointer; position:absolute; right:12px; top:8px; font-size:20px; color:#fff;">&times;</span>
@@ -117,14 +140,68 @@
         </div>
     </div>
 
-    <!-- TUTAJ ZNAJDUJE SIĘ RESZTA TWOJEJ GRY / ELEMENTÓW BODY -->
+    <div>
+        <div class="score-box">Punkty: <span id="score">0</span></div>
+        <div class="score-box">CPS: <span id="cps">0</span></div>
+    </div>
 
-    <!-- Biblioteki Firebase (wersja kompatybilna v8) -->
+    <!-- GŁÓWNY KLIKACZ -->
+    <img src="obrazek.png" class="clicker-img" id="clicker" onclick="clickAction()">
+
+    <!-- RUCHOME OBIEKTY TŁA (DVD) -->
+    <img src="obrazekzek.png" class="dvd-obj" id="dvd1">
+    <img src="obrazek.png" class="dvd-obj" id="dvd2">
+
+    <!-- Skrypty gry -->
+    <script>
+        let score = 0;
+        let playerName = localStorage.getItem('panPiotrNick') || 'Gracz';
+        
+        function clickAction() {
+            score++;
+            document.getElementById('score').innerText = score;
+        }
+
+        function changeNick() {
+            let newNick = prompt("Podaj swój nick:", playerName);
+            if (newNick) {
+                playerName = newNick;
+                localStorage.setItem('panPiotrNick', playerName);
+                document.getElementById('ranking-list').innerText = `1. ${playerName}: ${score} pkt`;
+            }
+        }
+
+        // Animacja DVD w tle
+        const dvdObjects = [
+            { element: document.getElementById('dvd1'), x: 100, y: 100, dx: 2, dy: 2 },
+            { element: document.getElementById('dvd2'), x: 300, y: 200, dx: -2, dy: 1.5 }
+        ];
+
+        function animateDVD() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            dvdObjects.forEach(obj => {
+                obj.x += obj.dx;
+                obj.y += obj.dy;
+
+                if (obj.x + 140 >= screenWidth || obj.x <= 0) obj.dx *= -1;
+                if (obj.y + 140 >= screenHeight || obj.y <= 0) obj.dy *= -1;
+
+                obj.element.style.left = obj.x + 'px';
+                obj.element.style.top = obj.y + 'px';
+            });
+
+            requestAnimationFrame(animateDVD);
+        }
+        animateDVD();
+    </script>
+
+    <!-- Biblioteki Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-      // Twoja skonfigurowana baza Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyDPd1grXMdHysx2oApr-oPyv-LL5kgWPIE",
         authDomain: "pan-piotr-clicker-opinie.firebaseapp.com",
@@ -135,7 +212,6 @@
         appId: "1:299267672814:web:1d24ddc412754def9e81ff"
       };
       
-      // Inicjalizacja Firebase
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
 
@@ -147,7 +223,6 @@
           document.getElementById('feedback-modal').style.display = 'none';
       }
 
-      // WYSYŁANIE OPINII DO BAZY
       function sendFeedback() {
           const text = document.getElementById('feedback-text').value.trim();
           if (!text) {
@@ -155,10 +230,8 @@
               return;
           }
           
-          const nick = (typeof playerName !== 'undefined' && playerName) ? playerName : 'Gracz';
-
           db.ref('opinie').push({
-              nick: nick,
+              nick: playerName,
               tekst: text,
               data: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString().slice(0,5)
           });
@@ -167,7 +240,6 @@
           alert("Dzięki za opinię!");
       }
 
-      // POBIERANIE OPINII NA ŻYWO I ODŚWIEŻANIE LICZNIKA
       db.ref('opinie').on('value', (snapshot) => {
           const data = snapshot.val();
           const listEl = document.getElementById('feedback-list');

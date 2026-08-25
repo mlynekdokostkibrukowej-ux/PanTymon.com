@@ -238,7 +238,7 @@
         }
         .click-img:active { transform: scale(0.9); }
 
-        /* LATAJĄCY BONUS */
+        /* LATAJĄCY BONUS - POPRAWIONY Z-INDEX (ZAWSIZE NA WIERZCHU) */
         .bonus-img {
             position: absolute;
             width: 80px;
@@ -247,7 +247,7 @@
             border: 3px solid #ffcc00;
             box-shadow: 0 0 20px #ffcc00;
             cursor: pointer;
-            z-index: 50;
+            z-index: 9999;
             transition: transform 0.1s;
         }
         .bonus-img:hover {
@@ -294,8 +294,13 @@
         }
         .footer-disclaimer a { color: #00ffcc; text-decoration: none; }
 
-        .instruction, h1 { position: relative; z-index: 20; margin: 5px 0; }
-        .instruction { color: #aaa; font-size: 14px; }
+        /* ZMIANA: Nagłówki i teksty nie blokują kliknięć myszką */
+        .instruction, h1 { 
+            position: relative; 
+            z-index: 1; 
+            pointer-events: none; 
+            margin: 5px 0; 
+        }
     </style>
 </head>
 <body>

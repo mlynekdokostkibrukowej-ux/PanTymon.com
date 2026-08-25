@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Strona Pana Piotra</title>
+    <title>Pan Piotr Clicker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,11 +67,37 @@
             transition: transform 0.1s;
         }
 
+        /* PRZYCISK MUZYKI (GŁOŚNICZEK) */
+        .music-btn {
+            position: absolute;
+            top: 15px;
+            right: 290px;
+            background: #222;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 25;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+            background: #333;
+        }
+
         /* PRZYCISK I MODAL DLA KODÓW */
         .code-btn {
             position: absolute;
             top: 15px;
-            right: 15px;
+            right: 200px;
             background: #00ffcc;
             color: #1a1a1a;
             border: none;
@@ -82,6 +108,8 @@
             cursor: pointer;
             z-index: 25;
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+            height: 42px;
+            box-sizing: border-box;
         }
 
         #code-modal, #unlock-modal {
@@ -147,6 +175,53 @@
             100% { box-shadow: 0 0 35px #ffcc00; }
         }
 
+        /* SKLEP Z ULEPSZENIAMI */
+        .shop-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ff0055;
+            z-index: 25;
+            width: 170px;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+        }
+
+        .shop-container h3 { margin: 0 0 10px 0; color: #ff0055; font-size: 15px; }
+
+        .shop-btn {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 6px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #ff0055;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: 0.2s;
+        }
+
+        .shop-btn:hover { background: #ff0055; }
+
+        /* POWIADOMIENIE O OSIĄGNIĘCIU */
+        #achievement-toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffcc00;
+            color: #111;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 0 20px #ffcc00;
+            z-index: 999;
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
         /* STATYSTYKI I GRA */
         .stats-container {
             display: flex;
@@ -155,7 +230,7 @@
             gap: 15px;
             position: relative;
             z-index: 20;
-            margin-bottom: 10px;
+            margin-bottom: 25px;
         }
 
         .stat-box {
@@ -170,7 +245,6 @@
             gap: 10px;
         }
 
-        /* KINGER PRZY LICZNIKU PUNKTÓW */
         #kinger-score-icon {
             display: none;
             width: 35px;
@@ -205,10 +279,12 @@
             min-width: 180px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
+
         .leaderboard h3 { 
             margin: 0 0 8px 0; color: #00ffcc; font-size: 15px; text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 4px;
         }
+
         .leaderboard ol { margin: 0; padding-left: 20px; }
         .leaderboard li { margin-bottom: 4px; color: #ddd; }
 
@@ -234,11 +310,12 @@
         .click-img {
             width: 150px; height: auto; border-radius: 15px; cursor: pointer;
             box-shadow: 0 0 25px #ff0055; position: relative; z-index: 20;
-            transition: transform 0.05s ease; margin-top: 10px;
+            transition: transform 0.05s ease; margin-top: 20px;
+            touch-action: manipulation;
         }
+
         .click-img:active { transform: scale(0.9); }
 
-        /* LATAJĄCY BONUS */
         .bonus-img {
             position: absolute;
             width: 80px;
@@ -250,11 +327,9 @@
             z-index: 9999;
             transition: transform 0.1s;
         }
-        .bonus-img:hover {
-            transform: scale(1.15);
-        }
 
-        /* LATAJĄCY NAPIS PUNKTÓW */
+        .bonus-img:hover { transform: scale(1.15); }
+
         .floating-text {
             position: absolute;
             font-size: 24px;
@@ -292,22 +367,18 @@
             color: rgba(255, 255, 255, 0.7); background: rgba(0, 0, 0, 0.6);
             padding: 6px 12px; border-radius: 8px; z-index: 25;
         }
-        .footer-disclaimer a { color: #00ffcc; text-decoration: none; }
 
-        .instruction, h1 { 
-            position: relative; 
-            z-index: 1; 
-            pointer-events: none; 
-            margin: 5px 0; 
-        }
+        .footer-disclaimer a { color: #00ffcc; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <!-- EKRAN LOGOWANIA -->
+    <!-- EKRAN LOGOWANIA Z PRZENIESIONYMI NAPISAMI -->
     <div id="login-screen">
         <div class="login-box">
-            <h2>Witaj w Clickerze!</h2>
+            <h1 style="color: #00ffcc; margin: 0 0 10px 0; font-size: 32px;">Witaj na mojej stronie!</h1>
+            <h2>Clicker Pana Piotra</h2>
+            <p style="color: #ffcc00; font-weight: bold; margin-bottom: 15px;">Klikaj w obrazek jak najszybciej!</p>
             <p style="color: #ccc; margin-bottom: 15px;">Wpisz swój nick, aby zacząć:</p>
             <input type="text" id="nickname-input" placeholder="Twój Nick..." maxlength="15">
             <br>
@@ -315,8 +386,25 @@
         </div>
     </div>
 
-    <!-- PRZYCISK DO WPROWADZANIA KODU -->
+    <!-- PRZYCISK MUZYKI -->
+    <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Włącz/Wyłącz Muzykę">🔊</button>
+
+    <!-- PRZYCISK DO KODÓW -->
     <button class="code-btn" onclick="openCodeModal()">KOD</button>
+
+    <!-- SKLEP -->
+    <div class="shop-container">
+        <h3>🛒 Sklep CPS</h3>
+        <button class="shop-btn" onclick="buyUpgrade('cursor', 50, 1)">
+            Autoklikacz (+1 CPS)<br><small>Koszt: <span id="cost-cursor">50</span> pkt</small>
+        </button>
+        <button class="shop-btn" onclick="buyUpgrade('farm', 300, 5)">
+            Młynek Punktów (+5 CPS)<br><small>Koszt: <span id="cost-farm">300</span> pkt</small>
+        </button>
+    </div>
+
+    <!-- POWIADOMIENIE O OSIĄGNIĘCIU -->
+    <div id="achievement-toast">🏆 Osiągnięcie odblokowane!</div>
 
     <!-- OKIENKO DO KODU -->
     <div id="code-modal">
@@ -351,10 +439,7 @@
         <button class="change-nick-btn" onclick="changeNickname()">Zmień Nick</button>
     </div>
 
-    <h1>Witaj na mojej stronie!</h1>
-    
     <div class="stats-container">
-        <!-- OBRAZEK KINGERA PRZY LICZNIKU -->
         <div class="stat-box" id="score-board">
             <img src="kinger.jpg" id="kinger-score-icon" title="Kinger aktywny (+10 pkt / 15s)">
             Punkty: <span id="score">0</span>
@@ -364,8 +449,6 @@
     </div>
 
     <div id="cheat-warning">⚠️ WYKRYTO AUTO-CLICKERA! BLOKADA PUNKTY WSTRZYMANE! ⚠️</div>
-
-    <p class="instruction">Klikaj w obrazek jak najszybciej!</p>
 
     <!-- AUDIO -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
@@ -399,11 +482,27 @@
         const latwoAudio = document.getElementById('latwoAudio');
         const unlockVideo = document.getElementById('unlock-video');
         const unlockImg = document.getElementById('unlock-img');
+        const targetImg = document.getElementById('targetImg');
+        const musicBtn = document.getElementById('music-btn');
 
         let playerName = localStorage.getItem('clicker_current_player') || '';
-
         let score = parseInt(localStorage.getItem('clicker_saved_score')) || 0;
+        let maxCps = parseFloat(localStorage.getItem('clicker_max_cps')) || 0;
+        let unlockedCodes = JSON.parse(localStorage.getItem('clicker_unlocked_codes')) || {};
+        let isMuted = localStorage.getItem('clicker_music_muted') === 'true';
+
         document.getElementById('score').innerText = score;
+        document.getElementById('max-cps').innerText = maxCps.toFixed(1);
+
+        audio.muted = isMuted;
+        musicBtn.innerText = isMuted ? '🔇' : '🔊';
+
+        function toggleMusic() {
+            isMuted = !isMuted;
+            audio.muted = isMuted;
+            localStorage.setItem('clicker_music_muted', isMuted);
+            musicBtn.innerText = isMuted ? '🔇' : '🔊';
+        }
 
         if (playerName) {
             document.getElementById('nickname-input').value = playerName;
@@ -419,10 +518,14 @@
             playerName = input;
             localStorage.setItem('clicker_current_player', playerName);
             document.getElementById('login-screen').style.display = 'none';
+            
             audio.play().catch(error => console.log("Błąd audio:", error));
 
             renderLeaderboard();
             scheduleNextBonus();
+            
+            if (unlockedCodes['pan piotr']) showKingerAtScore();
+            if (unlockedCodes['dvd']) applyDvdSpeedup();
         }
 
         document.getElementById('nickname-input').addEventListener('keypress', function (e) {
@@ -433,8 +536,76 @@
             document.getElementById('login-screen').style.display = 'flex';
         }
 
-        /* --- LOGIKA KODÓW PROMO I ODBLOKOWANIA --- */
-        let hasPanPiotrItem = localStorage.getItem('code_pan_piotr_unlocked') === 'true';
+        targetImg.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            addPointAndChangeColor({ clientX: touch.clientX, clientY: touch.clientY });
+        }, { passive: false });
+
+        let autoCps = parseInt(localStorage.getItem('clicker_auto_cps')) || 0;
+        let upgradeCosts = {
+            cursor: parseInt(localStorage.getItem('cost_cursor')) || 50,
+            farm: parseInt(localStorage.getItem('cost_farm')) || 300
+        };
+
+        document.getElementById('cost-cursor').innerText = upgradeCosts.cursor;
+        document.getElementById('cost-farm').innerText = upgradeCosts.farm;
+
+        function buyUpgrade(type, baseCost, cpsAmount) {
+            let currentCost = upgradeCosts[type];
+            if (score >= currentCost) {
+                score -= currentCost;
+                autoCps += cpsAmount;
+                
+                upgradeCosts[type] = Math.floor(currentCost * 1.5);
+                
+                localStorage.setItem('clicker_saved_score', score);
+                localStorage.setItem('clicker_auto_cps', autoCps);
+                localStorage.setItem(`cost_${type}`, upgradeCosts[type]);
+
+                document.getElementById('score').innerText = score;
+                document.getElementById(`cost-${type}`).innerText = upgradeCosts[type];
+                updateScoreInLeaderboard(score);
+
+                showAchievement(`Kupiono ulepszenie! (+${cpsAmount} CPS)`);
+            } else {
+                alert("Masz za mało punktów!");
+            }
+        }
+
+        setInterval(() => {
+            if (autoCps > 0) {
+                score += autoCps;
+                document.getElementById('score').innerText = score;
+                localStorage.setItem('clicker_saved_score', score);
+                updateScoreInLeaderboard(score);
+                checkAchievements();
+            }
+        }, 1000);
+
+        const unlockedAchievements = JSON.parse(localStorage.getItem('clicker_achievements')) || {};
+
+        function checkAchievements() {
+            if (score >= 100 && !unlockedAchievements['100_pts']) {
+                unlockAchieve('100_pts', '🏆 Pierwsza setka punktów!');
+            }
+            if (score >= 1000 && !unlockedAchievements['1000_pts']) {
+                unlockAchieve('1000_pts', '🚀 Klikacz Tysiąclecia!');
+            }
+        }
+
+        function unlockAchieve(id, message) {
+            unlockedAchievements[id] = true;
+            localStorage.setItem('clicker_achievements', JSON.stringify(unlockedAchievements));
+            showAchievement(message);
+        }
+
+        function showAchievement(text) {
+            const toast = document.getElementById('achievement-toast');
+            toast.innerText = text;
+            toast.style.bottom = '30px';
+            setTimeout(() => { toast.style.bottom = '-100px'; }, 3000);
+        }
 
         function openCodeModal() {
             document.getElementById('code-modal').style.display = 'flex';
@@ -473,15 +644,16 @@
             unlockVideo.style.display = 'none';
 
             if (codeInput === 'pan piotr') {
-                if (hasPanPiotrItem) {
+                if (unlockedCodes['pan piotr']) {
                     alert('Ten kod został już użyty!');
                 } else {
-                    hasPanPiotrItem = true;
-                    localStorage.setItem('code_pan_piotr_unlocked', 'true');
+                    unlockedCodes['pan piotr'] = true;
+                    localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+                    
                     closeCodeModal();
 
                     jejAudio.currentTime = 0;
-                    jejAudio.play().catch(e => console.log("Błąd odtwarzania Jej:", e));
+                    jejAudio.play().catch(e => console.log("Błąd audio:", e));
                     
                     document.getElementById('unlock-title').innerText = "🎉 ODBLOKOWANO! 🎉";
                     document.getElementById('unlock-subtitle').innerText = "Postać: Kinger";
@@ -493,25 +665,28 @@
                 }
             } 
             else if (codeInput === 'dvd') {
-                closeCodeModal();
-                
-                dvdObjects.forEach(obj => {
-                    obj.dx *= 2.5;
-                    obj.dy *= 2.5;
-                });
+                if (unlockedCodes['dvd']) {
+                    alert('Ten kod jest już aktywny!');
+                } else {
+                    unlockedCodes['dvd'] = true;
+                    localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
 
-                lolAudio.currentTime = 0;
-                lolAudio.play().catch(e => console.log("Błąd odtwarzania Lol:", e));
+                    closeCodeModal();
+                    applyDvdSpeedup();
 
-                unlockImg.style.display = 'none';
-                unlockVideo.style.display = 'block';
-                unlockVideo.currentTime = 0;
-                unlockVideo.play().catch(e => console.log("Błąd odtwarzania wideo:", e));
+                    lolAudio.currentTime = 0;
+                    lolAudio.play().catch(e => console.log("Błąd audio:", e));
 
-                document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
-                document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
-                document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz super szybko!";
-                document.getElementById('unlock-modal').style.display = 'flex';
+                    unlockImg.style.display = 'none';
+                    unlockVideo.style.display = 'block';
+                    unlockVideo.currentTime = 0;
+                    unlockVideo.play().catch(e => console.log("Błąd wideo:", e));
+
+                    document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
+                    document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
+                    document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz super szybko!";
+                    document.getElementById('unlock-modal').style.display = 'flex';
+                }
             } 
             else if (codeInput === 'darmowe punkty') {
                 closeCodeModal();
@@ -523,7 +698,7 @@
                 resetScoreToZero();
 
                 latwoAudio.currentTime = 0;
-                latwoAudio.play().catch(e => console.log("Błąd audio Łatwo:", e));
+                latwoAudio.play().catch(e => console.log("Błąd audio:", e));
 
                 document.getElementById('unlock-title').innerText = "💀 KOD OSZUSTWO 💀";
                 document.getElementById('unlock-subtitle').innerText = "Błąd systemu: Punkty wyczyszczone!";
@@ -541,13 +716,18 @@
             document.getElementById('kinger-score-icon').style.display = 'inline-block';
         }
 
-        if (hasPanPiotrItem) {
-            showKingerAtScore();
+        function applyDvdSpeedup() {
+            dvdObjects.forEach(obj => {
+                if (!obj.isSpeededUp) {
+                    obj.dx *= 2.5;
+                    obj.dy *= 2.5;
+                    obj.isSpeededUp = true;
+                }
+            });
         }
 
-        /* LICZNIK KINGERA */
         setInterval(() => {
-            if (hasPanPiotrItem) {
+            if (unlockedCodes['pan piotr']) {
                 score += 10;
                 document.getElementById('score').innerText = score;
                 localStorage.setItem('clicker_saved_score', score);
@@ -561,7 +741,6 @@
             }
         }, 15000);
 
-        /* LATAJĄCY BONUS */
         function scheduleNextBonus() {
             const randomTime = Math.floor(Math.random() * 15000) + 15000;
             setTimeout(spawnBonusImage, randomTime);
@@ -587,7 +766,7 @@
                 updateScoreInLeaderboard(score);
 
                 bonusAudio.currentTime = 0;
-                bonusAudio.play().catch(e => console.log("Błąd audio bonus:", e));
+                bonusAudio.play().catch(e => console.log("Błąd audio:", e));
 
                 createFloatingText(e.clientX, e.clientY, "+500!", "#ffcc00");
                 createParticles(e.clientX, e.clientY);
@@ -605,16 +784,10 @@
                 easing: 'linear'
             });
 
-            animation.onfinish = () => {
-                if (bonus.parentNode) {
-                    bonus.remove();
-                }
-            };
-
+            animation.onfinish = () => { if (bonus.parentNode) bonus.remove(); };
             scheduleNextBonus();
         }
 
-        /* RANKING */
         function getLeaderboard() {
             return JSON.parse(localStorage.getItem('clicker_leaderboard')) || [];
         }
@@ -653,18 +826,12 @@
             leaderboard.forEach(entry => {
                 const li = document.createElement('li');
                 li.innerHTML = `<b>${entry.name}</b>: <span style="color:#00ffcc">${entry.score}</span> pkt`;
-                if (entry.name === playerName) {
-                    li.style.color = '#ffcc00';
-                }
+                if (entry.name === playerName) li.style.color = '#ffcc00';
                 listElement.appendChild(li);
             });
         }
 
-        renderLeaderboard();
-
-        /* KLIKANIE I ANIMACJE */
         let clickTimestamps = [];
-        let maxCps = 0;
         let isCheating = false;
 
         function addPointAndChangeColor(event) {
@@ -675,6 +842,7 @@
             localStorage.setItem('clicker_saved_score', score);
 
             updateScoreInLeaderboard(score);
+            checkAchievements();
 
             const now = Date.now();
             clickTimestamps.push(now);
@@ -696,7 +864,6 @@
             floatEl.style.top = (y - 20) + 'px';
 
             document.body.appendChild(floatEl);
-
             setTimeout(() => { floatEl.remove(); }, 800);
         }
 
@@ -728,7 +895,6 @@
             }
         }
 
-        /* LICZNIK CPS */
         setInterval(() => {
             const now = Date.now();
             clickTimestamps = clickTimestamps.filter(timestamp => now - timestamp <= 1000);
@@ -747,6 +913,7 @@
             if (currentCps > maxCps && !isCheating) {
                 maxCps = currentCps;
                 document.getElementById('max-cps').innerText = maxCps;
+                localStorage.setItem('clicker_max_cps', maxCps);
             }
         }, 100);
 
@@ -758,7 +925,6 @@
             btn.style.top = y + 'px';
         }
 
-        /* LATAJĄCE DVD */
         const dvdImages = document.querySelectorAll('.dvd-img');
         const dvdObjects = [];
 
@@ -768,7 +934,8 @@
                 x: Math.random() * (window.innerWidth - 150),
                 y: Math.random() * (window.innerHeight - 150),
                 dx: (Math.random() > 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
-                dy: (Math.random() > 0.5 ? 1 : -1) * (2.5 + Math.random() * 2)
+                dy: (Math.random() > 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
+                isSpeededUp: false
             });
         });
 
@@ -795,6 +962,5 @@
 
         animateDVD();
     </script>
-
 </body>
 </html>

@@ -94,53 +94,6 @@
             transform: scale(1.05);
         }
 
-        /* EKRAN ŁADOWANIA */
-        #loading-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(10, 10, 10, 0.98);
-            z-index: 101;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #222;
-            border-top: 6px solid #00ffcc;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .progress-bar-container {
-            width: 250px;
-            height: 12px;
-            background: #222;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #00ffcc;
-            margin-top: 15px;
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff0055, #00ffcc);
-            transition: width 0.1s linear;
-        }
-
         /* PRZYCISK MUZYKI */
         .music-btn {
             position: absolute;
@@ -573,15 +526,6 @@
         </div>
     </div>
 
-    <!-- EKRAN ŁADOWANIA -->
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <h2 style="color: #00ffcc; margin: 0;">Ładowanie gry...</h2>
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-    </div>
-
     <!-- PRZYCISK MUZYKI -->
     <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Włącz/Wyłącz Muzykę">🔊</button>
 
@@ -698,6 +642,13 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
+        // SZYBKIE ŁADOWANIE TEKSTUR W TLE (Preload obrazów w pamięci przeglądarki podczas ekranu startowego)
+        const assetsToPreload = ['obraz.png', 'obrazek.png', 'kinger.jpg', 'obrazeczek.jpg'];
+        assetsToPreload.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+
         const audio = document.getElementById('bgAudio');
         const jejAudio = document.getElementById('jejAudio');
         const lolAudio = document.getElementById('lolAudio');
@@ -773,25 +724,13 @@
             
             playerName = input;
             localStorage.setItem('clicker_current_player', playerName);
+            
+            // Zamknięcie ekranu startowego (tekstury są już załadowane w tle)
             document.getElementById('login-screen').style.display = 'none';
             
-            const loadingScreen = document.getElementById('loading-screen');
-            const progressBar = document.getElementById('progress-bar');
-            loadingScreen.style.display = 'flex';
-            
-            let progress = 0;
-            const loadingInterval = setInterval(() => {
-                progress += 5;
-                progressBar.style.width = progress + '%';
-                
-                if (progress >= 100) {
-                    clearInterval(loadingInterval);
-                    loadingScreen.style.display = 'none';
-                    audio.play().catch(error => console.log("Błąd audio:", error));
-                    renderLeaderboard();
-                    if (unlockedCodes['pan piotr']) showKingerAtScore();
-                }
-            }, 75);
+            audio.play().catch(error => console.log("Błąd audio:", error));
+            renderLeaderboard();
+            if (unlockedCodes['pan piotr']) showKingerAtScore();
         }
 
         document.getElementById('nickname-input').addEventListener('keypress', function (e) {

@@ -524,7 +524,7 @@
     <div id="login-screen">
         <div class="login-box">
             <h1>Witaj na mojej stronie!</h1>
-            <h2>Clicker Pana Piotra</h2>
+            <h2>Pan Piotr Clicker</h2>
             <p class="instruction">Klikaj w obrazek jak najszybciej!</p>
             <p class="subtext">Wpisz swój nick, aby rozpocząć grę:</p>
             <input type="text" id="nickname-input" placeholder="Twój Nick..." maxlength="15">
@@ -942,6 +942,7 @@
                 localStorage.setItem('clicker_saved_score', score);
                 updateScoreInFirebase();
 
+                secretVideo.src = "filmik.mp4"; // Filmik dla sekrecika
                 secretModal.style.display = 'flex';
                 audio.pause(); // Zatrzymanie muzyki w tle
                 secretVideo.currentTime = 0;
@@ -967,15 +968,13 @@
             } 
             else if (codeInput === 'dvd') {
                 closeCodeModal();
-                unlockImg.style.display = 'none';
-                unlockVideo.style.display = 'block';
-                unlockVideo.currentTime = 0;
-                unlockVideo.play().catch(e => {});
-
-                document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
-                document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
-                document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz jeszcze szybciej (wielorazowe)!";
-                document.getElementById('unlock-modal').style.display = 'flex';
+                
+                // Uruchomienie filmiku lol.mp4 na pełnym ekranie i zatrzymanie muzyki
+                secretVideo.src = "lol.mp4";
+                secretModal.style.display = 'flex';
+                audio.pause();
+                secretVideo.currentTime = 0;
+                secretVideo.play().catch(e => {});
                 
                 dvdData.forEach(item => {
                     item.vx *= 1.5;
@@ -1005,7 +1004,7 @@
             document.getElementById('promo-code-input').value = '';
         }
 
-        // Wznowienie muzyki po zakończeniu sekretnego filmu
+        // Wznowienie muzyki po zakończeniu filmiku pełnoekranowego
         secretVideo.addEventListener('ended', () => {
             secretModal.style.display = 'none';
             if (!isMuted) {

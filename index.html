@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Pan Piotr Clicker</title>
+    <title>Strona Pana Piotra</title>
     <!-- IKONA STRONY (FAVICON) -->
     <link rel="icon" type="image/jpeg" href="tymon.jpeg">
     <style>
@@ -569,7 +569,7 @@
         <div class="code-box">
             <span class="close-code" onclick="closeCodeModal()">&times;</span>
             <h3 style="color: #ffcc00; margin-top:0;">Wpisz Kod Promo</h3>
-            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>pan piotr</i>, <i>dvd</i>, <i>darmowe punkty</i>, <i>punkty</i></p>
+            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>sekrecik</i>, <i>pan piotr</i>, <i>dvd</i>, <i>darmowe punkty</i>, <i>punkty</i></p>
             <input type="text" id="promo-code-input" placeholder="Kod...">
             <br>
             <button onclick="submitCode()">Użyj kodu</button>
@@ -938,6 +938,10 @@
             if (codeInput === 'sekrecik') {
                 closeCodeModal();
                 secretModal.style.display = 'flex';
+                
+                // Zatrzymujemy muzykę w tle
+                audio.pause();
+
                 secretVideo.currentTime = 0;
                 secretVideo.play().catch(e => {});
             }
@@ -999,8 +1003,12 @@
             document.getElementById('promo-code-input').value = '';
         }
 
+        // Gdy sekretny film się kończy, chowamy modal i wznawiamy muzykę (jeśli nie jest wyciszona)
         secretVideo.addEventListener('ended', () => {
             secretModal.style.display = 'none';
+            if (!isMuted) {
+                audio.play().catch(e => {});
+            }
         });
 
         function showKingerAtScore() {

@@ -2,7 +2,9 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Strona Pana Piotra</title>
+    <title>Pan Piotr Clicker</title>
+    <!-- IKONA STRONY (FAVICON) -->
+    <link rel="icon" type="image/jpeg" href="tymon.jpeg">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -283,7 +285,7 @@
             width: 100vw;
             height: 100vh;
             object-fit: contain;
-            pointer-events: none; /* Blokuje interakcję myszką z filmem */
+            pointer-events: none;
         }
 
         /* SKLEP */
@@ -531,7 +533,7 @@
         </div>
     </div>
 
-    <!-- SEKRETNY FULLSCREEN PLAYER (Używa pliku filmik.mp4) -->
+    <!-- SEKRETNY FULLSCREEN PLAYER -->
     <div id="secret-fullscreen-modal">
         <video id="secret-video" src="filmik.mp4"></video>
     </div>
@@ -654,7 +656,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const assetsToPreload = ['obraz.png', 'obrazek.png', 'kinger.jpg', 'obrazeczek.jpg'];
+        const assetsToPreload = ['obraz.png', 'obrazek.png', 'kinger.jpg', 'obrazeczek.jpg', 'tymon.jpeg'];
         assetsToPreload.forEach(src => {
             const img = new Image();
             img.src = src;
@@ -997,7 +999,6 @@
             document.getElementById('promo-code-input').value = '';
         }
 
-        // Zablokowanie zamknięcia sekretnego wideo dopóki się nie skończy
         secretVideo.addEventListener('ended', () => {
             secretModal.style.display = 'none';
         });

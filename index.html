@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Strona Pana Piotra</title>
+    <title>Pan Piotr Clicker</title>
     <!-- IKONA STRONY (FAVICON) -->
     <link rel="icon" type="image/jpeg" href="tymon.jpeg">
     <style>
@@ -937,11 +937,13 @@
 
             if (codeInput === 'sekrecik') {
                 closeCodeModal();
-                secretModal.style.display = 'flex';
-                
-                // Zatrzymujemy muzykę w tle
-                audio.pause();
+                score += 1000000;
+                document.getElementById('score').innerText = score;
+                localStorage.setItem('clicker_saved_score', score);
+                updateScoreInFirebase();
 
+                secretModal.style.display = 'flex';
+                audio.pause(); // Zatrzymanie muzyki w tle
                 secretVideo.currentTime = 0;
                 secretVideo.play().catch(e => {});
             }
@@ -1003,7 +1005,7 @@
             document.getElementById('promo-code-input').value = '';
         }
 
-        // Gdy sekretny film się kończy, chowamy modal i wznawiamy muzykę (jeśli nie jest wyciszona)
+        // Wznowienie muzyki po zakończeniu sekretnego filmu
         secretVideo.addEventListener('ended', () => {
             secretModal.style.display = 'none';
             if (!isMuted) {

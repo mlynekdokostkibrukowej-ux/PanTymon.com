@@ -16,7 +16,7 @@
             transition: background-color 0.3s ease;
         }
 
-        /* EKRAN STARTOWY / LOGOWANIA */
+        /* EKRAN STARTOWY */
         #login-screen {
             position: fixed;
             top: 0;
@@ -228,7 +228,7 @@
             font-size: 13px;
             cursor: pointer;
             z-index: 25;
-            width: 212px;
+            width: 180px;
             box-sizing: border-box;
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
             transition: transform 0.2s, background 0.2s;
@@ -501,7 +501,7 @@
             100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
         }
 
-        /* LATAJĄCE OBRAZKI DVD (DOKŁADNIE 4 SZTUKI) */
+        /* LATAJĄCE OBRAZKI DVD (4 SZTUKI) */
         .dvd-img {
             position: fixed; 
             width: 120px; 
@@ -510,6 +510,26 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); 
             z-index: 2;
             pointer-events: none;
+        }
+
+        /* OBRAZEK BONUSOWY +500 PKT (obrazeczek.jpg) */
+        #bonus-item {
+            position: fixed;
+            width: 100px;
+            height: auto;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            z-index: 50;
+            display: none;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 0 25px #ffcc00;
+            animation: bonusPulse 0.5s infinite alternate;
+        }
+
+        @keyframes bonusPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
         }
 
         /* UCIEKAJĄCY PRZYCISK */
@@ -656,11 +676,14 @@
         <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
     </div>
 
-    <!-- DOKŁADNIE 4 OBRAZKI DVD -->
+    <!-- 4 OBRAZKI DVD -->
     <img class="dvd-img" src="obrazek.png" alt="DVD 1">
     <img class="dvd-img" src="obrazek.png" alt="DVD 2">
     <img class="dvd-img" src="obrazek.png" alt="DVD 3">
     <img class="dvd-img" src="obrazek.png" alt="DVD 4">
+
+    <!-- OBRAZEK BONUSOWY (Z WIZERUNKIEM obrazeczek.jpg) -->
+    <img id="bonus-item" src="obrazeczek.jpg" alt="Bonus +500" onclick="collectBonus()">
 
     <!-- UCIEKAJĄCY PRZYCISK -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
@@ -1032,6 +1055,61 @@
             requestAnimationFrame(animateDvd);
         }
         animateDvd();
+
+        // SYSTEM BONUSOWY (PRZELATUJĄCY OBRAZEK obrazeczek.jpg +500 PKT)
+        const bonusItem = document.getElementById('bonus-item');
+        let bonusActive = false;
+        let bonusX = 0, bonusY = 0, bonusVx = 0, bonusVy = 0;
+
+        function spawnBonus() {
+            if (bonusActive) return;
+            bonusActive = true;
+            bonusItem.style.display = 'block';
+
+            bonusX = Math.random() < 0.5 ? -100 : window.innerWidth + 100;
+            bonusY = Math.random() * (window.innerHeight - 200) + 100;
+            bonusVx = (bonusX < 0 ? 1 : -1) * (3 + Math.random() * 2);
+            bonusVy = (Math.random() - 0.5) * 2;
+        }
+
+        function animateBonus() {
+            if (bonusActive) {
+                bonusX += bonusVx;
+                bonusY += bonusVy;
+
+                bonusItem.style.left = `${bonusX}px`;
+                bonusItem.style.top = `${bonusY}px`;
+
+                if (bonusX < -150 || bonusX > window.innerWidth + 150) {
+                    bonusActive = false;
+                    bonusItem.style.display = 'none';
+                }
+            }
+            requestAnimationFrame(animateBonus);
+        }
+        animateBonus();
+
+        setInterval(() => {
+            if (!bonusActive && playerName !== '') {
+                spawnBonus();
+            }
+        }, 20000);
+
+        function collectBonus() {
+            if (!bonusActive) return;
+            score += 500;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('clicker_saved_score', score);
+            checkAchievements();
+
+            bonusAudio.currentTime = 0;
+            bonusAudio.play().catch(e => {});
+
+            showAchievement("🎁 Złapano bonus! +500 punktów!");
+
+            bonusActive = false;
+            bonusItem.style.display = 'none';
+        }
 
         // UCIEKAJĄCY PRZYCISK
         const movingBtn = document.getElementById('btn');

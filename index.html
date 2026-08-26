@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Pan Piotr clicker</title>
+    <title>Pan Piotr Clicker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -593,11 +593,9 @@
         <div class="stat-box" id="max-cps-board">MAX CPS: <span id="max-cps">0.0</span></div>
     </div>
 
-    <!-- AUDIO -->
+    <!-- AUDIO (oczyszczone z brakujących plików) -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
     <audio id="jejAudio" preload="auto" src="jej.mp3"></audio>
-    <audio id="lolAudio" preload="auto" src="lol.mp3"></audio>
-    <audio id="bonusAudio" preload="auto" src="bonus.mp3"></audio>
     <audio id="latwoAudio" preload="auto" src="latwo.mp3"></audio>
 
     <div>
@@ -638,8 +636,6 @@
 
         const audio = document.getElementById('bgAudio');
         const jejAudio = document.getElementById('jejAudio');
-        const lolAudio = document.getElementById('lolAudio');
-        const bonusAudio = document.getElementById('bonusAudio');
         const latwoAudio = document.getElementById('latwoAudio');
         const unlockVideo = document.getElementById('unlock-video');
         const unlockImg = document.getElementById('unlock-img');
@@ -930,8 +926,7 @@
             } 
             else if (codeInput === 'dvd') {
                 closeCodeModal();
-                lolAudio.currentTime = 0;
-                lolAudio.play().catch(e => {});
+                // Odtwarza dźwięk bezpośrednio z pliku lol.mp4 zamiast nieistniejącego lol.mp3
 
                 unlockImg.style.display = 'none';
                 unlockVideo.style.display = 'block';
@@ -943,7 +938,6 @@
                 document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz jeszcze szybciej (wielorazowe)!";
                 document.getElementById('unlock-modal').style.display = 'flex';
                 
-                // Każde wpisanie kodu mnoży prędkość na nowo w nieskończoność!
                 dvdData.forEach(item => {
                     item.vx *= 1.5;
                     item.vy *= 1.5;
@@ -1065,8 +1059,7 @@
             localStorage.setItem('clicker_saved_score', score);
             updateScoreInFirebase();
             checkAchievements();
-            bonusAudio.currentTime = 0;
-            bonusAudio.play().catch(e => {});
+            // Usunięto odwołanie do nieistniejącego bonusAudio
             showAchievement("🎁 Złapano bonus! +500 punktów!");
             bonusActive = false;
             bonusItem.style.display = 'none';

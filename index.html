@@ -285,7 +285,8 @@
             width: 100vw;
             height: 100vh;
             object-fit: contain;
-            pointer-events: none;
+            pointer-events: auto; /* Zmienione na auto, aby można było kliknąć i wyłączyć w przypadku DVD */
+            cursor: pointer;
         }
 
         /* SKLEP */
@@ -672,6 +673,8 @@
         const secretVideo = document.getElementById('secret-video');
         const secretModal = document.getElementById('secret-fullscreen-modal');
 
+        let activeSecretType = ''; // Zmienna do rozróżniania, który kod wywołał filmik
+
         // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDPd1grXMdHysx2oApr-oPyv-LL5kgWPIE",
@@ -942,9 +945,10 @@
                 localStorage.setItem('clicker_saved_score', score);
                 updateScoreInFirebase();
 
-                secretVideo.src = "filmik.mp4"; // Filmik dla sekrecika
+                activeSecretType = 'sekrecik';
+                secretVideo.src = "filmik.mp4";
                 secretModal.style.display = 'flex';
-                audio.pause(); // Zatrzymanie muzyki w tle
+                audio.pause();
                 secretVideo.currentTime = 0;
                 secretVideo.play().catch(e => {});
             }
@@ -969,7 +973,7 @@
             else if (codeInput === 'dvd') {
                 closeCodeModal();
                 
-                // Uruchomienie filmiku lol.mp4 na pełnym ekranie i zatrzymanie muzyki
+                activeSecretType = 'dvd';
                 secretVideo.src = "lol.mp4";
                 secretModal.style.display = 'flex';
                 audio.pause();
@@ -1004,11 +1008,32 @@
             document.getElementById('promo-code-input').value = '';
         }
 
-        // Wznowienie muzyki po zakończeniu filmiku pełnoekranowego
-        secretVideo.addEventListener('ended', () => {
+        // Funkcja do zamykania filmiku pełnoekranowego
+        function closeSecretVideo() {
             secretModal.style.display = 'none';
+            secretVideo.pause();
+            secretVideo.currentTime = 0;
             if (!isMuted) {
                 audio.play().catch(e => {});
+            }
+        }
+
+        // Kliknięcie w filmik wyłącza go TYLKO wtedy, gdy odpalił go kod "dvd"
+        secretVideo.addEventListener('click', () => {
+            if (activeSecretType === 'dvd') {
+                closeSecretVideo();
+            }
+        });
+
+        // Wznowienie muzyki / zamknięcie po zakończeniu filmiku (dla obu)
+        secretVideo.addEventListener('ended', () => {
+            closeSecretVideo();
+        });
+
+        // Zamknięcie filmiku DVD za pomocą klawisza ESC
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && secretModal.style.display === 'flex' && activeSecretType === 'dvd') {
+                closeSecretVideo();
             }
         });
 

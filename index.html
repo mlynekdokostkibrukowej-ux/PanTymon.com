@@ -94,7 +94,7 @@
             transform: scale(1.05);
         }
 
-        /* EKRAN ŁADOWANIA (LOADING SCREEN) */
+        /* EKRAN ŁADOWANIA */
         #loading-screen {
             display: none;
             position: fixed;
@@ -141,7 +141,7 @@
             transition: width 0.1s linear;
         }
 
-        /* PRZYCISK MUZYKI (GŁOŚNICZEK) */
+        /* PRZYCISK MUZYKI */
         .music-btn {
             position: absolute;
             top: 15px;
@@ -214,7 +214,7 @@
             cursor: pointer;
         }
 
-        /* STYL PRZYCISKU OPINII PO LEWEJ (IDEALNIE DOPASOWANY) */
+        /* PRZYCISK OPINII PO LEWEJ */
         .feedback-btn {
             position: absolute;
             top: 220px;
@@ -321,7 +321,7 @@
             100% { box-shadow: 0 0 35px #ffcc00; }
         }
 
-        /* SKLEP Z ULEPSZENIAMI Z MOŻLIWOŚCIą ZWIJANIA */
+        /* SKLEP */
         .shop-wrapper {
             position: absolute;
             top: 15px;
@@ -357,9 +357,7 @@
             transition: background 0.2s;
         }
 
-        .shop-toggle-btn:hover {
-            background: #e0004c;
-        }
+        .shop-toggle-btn:hover { background: #e0004c; }
 
         .shop-container {
             background: rgba(0, 0, 0, 0.85);
@@ -390,7 +388,7 @@
 
         .shop-btn:hover { background: #ff0055; }
 
-        /* POWIADOMIENIE O OSIĄGNIĘCIU */
+        /* POWIADOMIENIE */
         #achievement-toast {
             position: fixed;
             bottom: -100px;
@@ -478,19 +476,6 @@
             font-size: 11px; cursor: pointer; font-weight: bold;
         }
 
-        #cheat-warning {
-            display: none; color: #ff0055; font-size: 20px; font-weight: bold;
-            position: relative; z-index: 25; background: rgba(0, 0, 0, 0.85);
-            padding: 8px 16px; border-radius: 10px; margin: 5px auto;
-            width: fit-content; border: 2px solid #ff0055;
-            animation: pulse 0.5s infinite alternate;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
-        }
-
         .click-img {
             width: 150px; height: auto; border-radius: 15px; cursor: pointer;
             box-shadow: 0 0 25px #ff0055; position: relative; z-index: 20;
@@ -516,16 +501,33 @@
             100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
         }
 
+        /* LATAJĄCE OBRAZKI DVD (DOKŁADNIE 4 SZTUKI) */
         .dvd-img {
-            position: absolute; width: 140px; height: auto; border-radius: 10px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); z-index: 5;
+            position: fixed; 
+            width: 120px; 
+            height: auto; 
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); 
+            z-index: 2;
+            pointer-events: none;
         }
 
+        /* UCIEKAJĄCY PRZYCISK */
         .moving-btn {
-            position: absolute; padding: 15px 30px; font-size: 18px; font-weight: bold;
-            color: white; background-color: #ff0055; border: none; border-radius: 30px;
-            cursor: pointer; z-index: 10; transition: top 0.1s ease, left 0.1s ease;
+            position: fixed; 
+            padding: 12px 24px; 
+            font-size: 16px; 
+            font-weight: bold;
+            color: white; 
+            background-color: #ff0055; 
+            border: none; 
+            border-radius: 30px;
+            cursor: pointer; 
+            z-index: 15; 
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+            transition: background 0.2s;
         }
+        .moving-btn:hover { background-color: #ff3377; }
 
         .footer-disclaimer {
             position: absolute; bottom: 10px; right: 15px; font-size: 12px;
@@ -538,7 +540,7 @@
 </head>
 <body>
 
-    <!-- EKRAN STARTOWY / LOGOWANIA -->
+    <!-- EKRAN STARTOWY -->
     <div id="login-screen">
         <div class="login-box">
             <h1>Witaj na mojej stronie!</h1>
@@ -569,7 +571,7 @@
     <!-- PRZYCISK OPINII PO LEWEJ -->
     <button class="feedback-btn" onclick="openFeedbackModal()">💬 OPINIE (<span id="feedback-count">0</span>)</button>
 
-    <!-- SKLEP Z MOŻLIWOŚCIą SCHOWANIA -->
+    <!-- SKLEP -->
     <div class="shop-wrapper" id="shop-wrapper">
         <button class="shop-toggle-btn" id="shop-toggle-btn" onclick="toggleShop()" title="Zwiń / Rozwiń sklep">▶</button>
         <div class="shop-container">
@@ -583,10 +585,10 @@
         </div>
     </div>
 
-    <!-- POWIADOMIENIE O OSIĄGNIĘCIU -->
+    <!-- POWIADOMIENIE -->
     <div id="achievement-toast">🏆 Osiągnięcie odblokowane!</div>
 
-    <!-- OKIENKO DO KODU -->
+    <!-- OKIENKO KODU -->
     <div id="code-modal">
         <div class="code-box">
             <span class="close-code" onclick="closeCodeModal()">&times;</span>
@@ -598,7 +600,7 @@
         </div>
     </div>
 
-    <!-- OKIENKO OPINII (FIREBASE) -->
+    <!-- OKIENKO OPINII -->
     <div id="feedback-modal">
         <div class="feedback-box">
             <span class="close-code" onclick="closeFeedbackModal()">&times;</span>
@@ -625,7 +627,7 @@
         </div>
     </div>
 
-    <!-- TABELA RANKINGOWA -->
+    <!-- RANKING -->
     <div class="leaderboard">
         <h3>🏆 Ranking Top 5</h3>
         <ol id="high-scores-list">
@@ -643,8 +645,6 @@
         <div class="stat-box" id="max-cps-board">MAX CPS: <span id="max-cps">0.0</span></div>
     </div>
 
-    <div id="cheat-warning">⚠️ WYKRYTO AUTO-CLICKERA! BLOKADA PUNKTY WSTRZYMANE! ⚠️</div>
-
     <!-- AUDIO -->
     <audio id="bgAudio" loop preload="auto" src="muzyka.mp3"></audio>
     <audio id="jejAudio" preload="auto" src="jej.mp3"></audio>
@@ -656,12 +656,13 @@
         <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
     </div>
 
-    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
-    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
-    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
-    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
-    <img class="dvd-img" src="obrazek.png" alt="Latające tło">
+    <!-- DOKŁADNIE 4 OBRAZKI DVD -->
+    <img class="dvd-img" src="obrazek.png" alt="DVD 1">
+    <img class="dvd-img" src="obrazek.png" alt="DVD 2">
+    <img class="dvd-img" src="obrazek.png" alt="DVD 3">
+    <img class="dvd-img" src="obrazek.png" alt="DVD 4">
 
+    <!-- UCIEKAJĄCY PRZYCISK -->
     <button class="moving-btn" id="btn" onmouseover="moveButton()" onclick="alert('Złapałeś mnie!')">Złap mnie!</button>
 
     <div class="footer-disclaimer">
@@ -669,7 +670,7 @@
         <a href="mailto:mlynek.do.kostki.brukowej@gmail.com">mlynek.do.kostki.brukowej@gmail.com</a>
     </div>
 
-    <!-- BIBLIOTEKI FIREBASE DO OPINII -->
+    <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -763,11 +764,8 @@
                 if (progress >= 100) {
                     clearInterval(loadingInterval);
                     loadingScreen.style.display = 'none';
-                    
                     audio.play().catch(error => console.log("Błąd audio:", error));
-
                     renderLeaderboard();
-                    
                     if (unlockedCodes['pan piotr']) showKingerAtScore();
                 }
             }, 75);
@@ -781,14 +779,12 @@
             document.getElementById('login-screen').style.display = 'flex';
         }
 
-        // KLIKANIE GŁÓWNEGO OBRAZKA
         function addPointAndChangeColor(event) {
             score++;
             document.getElementById('score').innerText = score;
             localStorage.setItem('clicker_saved_score', score);
             checkAchievements();
 
-            // Efekt pływającego tekstu
             const x = event.clientX || (event.touches ? event.touches[0].clientX : window.innerWidth / 2);
             const y = event.clientY || (event.touches ? event.touches[0].clientY : window.innerHeight / 2);
             
@@ -799,9 +795,7 @@
             floatEl.style.top = `${y - 20}px`;
             document.body.appendChild(floatEl);
 
-            setTimeout(() => {
-                floatEl.remove();
-            }, 800);
+            setTimeout(() => { floatEl.remove(); }, 800);
         }
 
         targetImg.addEventListener('touchstart', function(e) {
@@ -824,7 +818,6 @@
             if (score >= currentCost) {
                 score -= currentCost;
                 autoCps += cpsAmount;
-                
                 upgradeCosts[type] = Math.floor(currentCost * 1.5);
                 
                 localStorage.setItem('clicker_saved_score', score);
@@ -833,7 +826,6 @@
 
                 document.getElementById('score').innerText = score;
                 document.getElementById(`cost-${type}`).innerText = upgradeCosts[type];
-
                 showAchievement(`Kupiono ulepszenie! (+${cpsAmount} CPS)`);
             } else {
                 alert("Masz za mało punktów!");
@@ -873,29 +865,14 @@
             setTimeout(() => { toast.style.bottom = '-100px'; }, 3000);
         }
 
-        function openCodeModal() {
-            document.getElementById('code-modal').style.display = 'flex';
-        }
-
-        function closeCodeModal() {
-            document.getElementById('code-modal').style.display = 'none';
-        }
-
-        // FUNKCJE OBSŁUGI OPINII
-        function openFeedbackModal() {
-            document.getElementById('feedback-modal').style.display = 'flex';
-        }
-
-        function closeFeedbackModal() {
-            document.getElementById('feedback-modal').style.display = 'none';
-        }
+        function openCodeModal() { document.getElementById('code-modal').style.display = 'flex'; }
+        function closeCodeModal() { document.getElementById('code-modal').style.display = 'none'; }
+        function openFeedbackModal() { document.getElementById('feedback-modal').style.display = 'flex'; }
+        function closeFeedbackModal() { document.getElementById('feedback-modal').style.display = 'none'; }
 
         function sendFeedback() {
             const text = document.getElementById('feedback-text').value.trim();
-            if (!text) {
-                alert("Napisz coś przed wysłaniem!");
-                return;
-            }
+            if (!text) { alert("Napisz coś przed wysłaniem!"); return; }
             
             db.ref('opinie').push({
                 nick: playerName || 'Gracz',
@@ -914,7 +891,6 @@
             if (!listEl) return;
             
             listEl.innerHTML = '';
-
             if (!data) {
                 listEl.innerHTML = '<p style="color:#888; text-align:center; font-size:12px;">Brak opinii. Bądź pierwszy!</p>';
                 if (countEl) countEl.innerText = 0;
@@ -946,7 +922,6 @@
 
         function submitCode() {
             const codeInput = document.getElementById('promo-code-input').value.trim().toLowerCase();
-
             unlockImg.style.display = 'inline-block';
             unlockVideo.style.display = 'none';
 
@@ -956,18 +931,15 @@
                 } else {
                     unlockedCodes['pan piotr'] = true;
                     localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
-                    
                     closeCodeModal();
-
                     jejAudio.currentTime = 0;
-                    jejAudio.play().catch(e => console.log("Błąd audio:", e));
+                    jejAudio.play().catch(e => {});
                     
                     document.getElementById('unlock-title').innerText = "🎉 ODBLOKOWANO! 🎉";
                     document.getElementById('unlock-subtitle').innerText = "Postać: Kinger";
                     unlockImg.src = "kinger.jpg";
                     document.getElementById('unlock-desc').innerText = "Daje +10 punktów co 15 sekund!";
                     document.getElementById('unlock-modal').style.display = 'flex';
-
                     showKingerAtScore();
                 }
             } 
@@ -977,16 +949,14 @@
                 } else {
                     unlockedCodes['dvd'] = true;
                     localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
-
                     closeCodeModal();
-
                     lolAudio.currentTime = 0;
-                    lolAudio.play().catch(e => console.log("Błąd audio:", e));
+                    lolAudio.play().catch(e => {});
 
                     unlockImg.style.display = 'none';
                     unlockVideo.style.display = 'block';
                     unlockVideo.currentTime = 0;
-                    unlockVideo.play().catch(e => console.log("Błąd wideo:", e));
+                    unlockVideo.play().catch(e => {});
 
                     document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
                     document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
@@ -1002,9 +972,8 @@
             else if (codeInput === 'punkty') {
                 closeCodeModal();
                 resetScoreToZero();
-
                 latwoAudio.currentTime = 0;
-                latwoAudio.play().catch(e => console.log("Błąd audio:", e));
+                latwoAudio.play().catch(e => {});
 
                 document.getElementById('unlock-title').innerText = "💀 KOD OSZUSTWO 💀";
                 document.getElementById('unlock-subtitle').innerText = "Błąd systemu: Punkty wyczyszczone!";
@@ -1027,16 +996,19 @@
             list.innerHTML = `<li>${playerName || 'Gracz'}: ${score} pkt</li>`;
         }
 
-        // RUCHOME TŁO DVD I PRZYCISK UCIEKAJĄCY
+        // ANIMACJA 4 OBRAZKÓW DVD
         const dvdImgs = document.querySelectorAll('.dvd-img');
         const dvdData = [];
-        dvdImgs.forEach((img, i) => {
-            dvdData.push({
-                el: img,
-                x: Math.random() * (window.innerWidth - 140),
-                y: Math.random() * (window.innerHeight - 100),
-                vx: (Math.random() < 0.5 ? 1 : -1) * (2 + Math.random() * 2),
-                vy: (Math.random() < 0.5 ? 1 : -1) * (2 + Math.random() * 2)
+        
+        window.addEventListener('load', () => {
+            dvdImgs.forEach((img, i) => {
+                dvdData.push({
+                    el: img,
+                    x: Math.random() * (window.innerWidth - 120),
+                    y: Math.random() * (window.innerHeight - 120),
+                    vx: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
+                    vy: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2)
+                });
             });
         });
 
@@ -1045,8 +1017,14 @@
                 item.x += item.vx;
                 item.y += item.vy;
 
-                if (item.x <= 0 || item.x + 140 >= window.innerWidth) item.vx *= -1;
-                if (item.y <= 0 || item.y + 100 >= window.innerHeight) item.vy *= -1;
+                const imgWidth = item.el.offsetWidth || 120;
+                const imgHeight = item.el.offsetHeight || 120;
+
+                if (item.x <= 0) { item.x = 0; item.vx *= -1; }
+                if (item.x + imgWidth >= window.innerWidth) { item.x = window.innerWidth - imgWidth; item.vx *= -1; }
+                
+                if (item.y <= 0) { item.y = 0; item.vy *= -1; }
+                if (item.y + imgHeight >= window.innerHeight) { item.y = window.innerHeight - imgHeight; item.vy *= -1; }
 
                 item.el.style.left = `${item.x}px`;
                 item.el.style.top = `${item.y}px`;
@@ -1055,17 +1033,18 @@
         }
         animateDvd();
 
+        // UCIEKAJĄCY PRZYCISK
         const movingBtn = document.getElementById('btn');
         function moveButton() {
-            const maxX = window.innerWidth - movingBtn.offsetWidth - 50;
-            const maxY = window.innerHeight - movingBtn.offsetHeight - 50;
-            const randomX = Math.max(50, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(50, Math.floor(Math.random() * maxY));
+            const maxX = window.innerWidth - movingBtn.offsetWidth - 30;
+            const maxY = window.innerHeight - movingBtn.offsetHeight - 30;
+            const randomX = Math.max(30, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(30, Math.floor(Math.random() * maxY));
             movingBtn.style.left = `${randomX}px`;
             movingBtn.style.top = `${randomY}px`;
         }
-        movingBtn.style.left = '100px';
-        movingBtn.style.top = '200px';
+        movingBtn.style.left = '150px';
+        movingBtn.style.top = '250px';
     </script>
 </body>
 </html>

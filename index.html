@@ -446,8 +446,16 @@
         }
 
         .dvd-img {
-            position: absolute; width: 120px; height: auto; border-radius: 10px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); z-index: 2; pointer-events: none;
+            position: fixed; 
+            width: 120px; 
+            height: auto; 
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); 
+            z-index: 2; 
+            pointer-events: none;
+            display: block;
+            left: 0px;
+            top: 0px;
         }
 
         #tiktok-flyer {
@@ -533,7 +541,7 @@
         <div class="code-box">
             <span class="close-code" onclick="closeCodeModal()">&times;</span>
             <h3 style="color: #ffcc00; margin-top:0;">Wpisz Kod Promo</h3>
-            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>pan piotr</i>, <i>dvd</i> (wielorazowy!), <i>darmowe punkty</i>, <i>punkty</i></p>
+            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>pan piotr</i>, <i>dvd</i> (wielorazowy, można wpisywać w nieskończoność!), <i>darmowe punkty</i>, <i>punkty</i></p>
             <input type="text" id="promo-code-input" placeholder="Kod...">
             <br>
             <button onclick="submitCode()">Użyj kodu</button>
@@ -932,9 +940,10 @@
 
                 document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
                 document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
-                document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz jeszcze szybciej!";
+                document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz jeszcze szybciej (wielorazowe)!";
                 document.getElementById('unlock-modal').style.display = 'flex';
                 
+                // Każde wpisanie kodu mnoży prędkość na nowo w nieskończoność!
                 dvdData.forEach(item => {
                     item.vx *= 1.5;
                     item.vy *= 1.5;
@@ -967,7 +976,7 @@
             document.getElementById('kinger-score-icon').style.display = 'inline-block';
         }
 
-        // ANIMACJA 5 OBRAZKÓW DVD (Globalna tablica dvdData)
+        // ANIMACJA 5 OBRAZKÓW DVD
         const dvdImgs = document.querySelectorAll('.dvd-img');
         const dvdData = [];
         

@@ -454,15 +454,33 @@
             100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
         }
 
-        /* LATAJĄCE OBRAZKI DVD (4 SZTUKI) */
+        /* LATAJĄCE OBRAZKI DVD (5 SZTUK) */
         .dvd-img {
-            position: fixed; 
+            position: absolute; 
             width: 120px; 
             height: auto; 
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); 
             z-index: 2;
             pointer-events: none;
+        }
+
+        /* PRZELATUJĄCY NAPIS TIKTOK */
+        #tiktok-flyer {
+            position: fixed;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff0055;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #ff0055;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 40;
+            display: none;
+        }
+
+        @keyframes flyAcross {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(calc(100vw + 100%)); }
         }
 
         /* OBRAZEK BONUSOWY +500 PKT (obrazeczek.jpg) */
@@ -557,7 +575,7 @@
         <div class="code-box">
             <span class="close-code" onclick="closeCodeModal()">&times;</span>
             <h3 style="color: #ffcc00; margin-top:0;">Wpisz Kod Promo</h3>
-            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>pan piotr</i>, <i>dvd</i>, <i>darmowe punkty</i>, <i>punkty</i></p>
+            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>pan piotr</i>, <i>dvd</i> (wielorazowy!), <i>darmowe punkty</i>, <i>punkty</i></p>
             <input type="text" id="promo-code-input" placeholder="Kod...">
             <br>
             <button onclick="submitCode()">Użyj kodu</button>
@@ -620,13 +638,17 @@
         <img class="click-img" id="targetImg" src="obraz.png" alt="Kliknij mnie!" onclick="addPointAndChangeColor(event)">
     </div>
 
-    <!-- 4 OBRAZKI DVD -->
+    <!-- 5 OBRAZKÓW DVD -->
     <img class="dvd-img" src="obrazek.png" alt="DVD 1">
     <img class="dvd-img" src="obrazek.png" alt="DVD 2">
     <img class="dvd-img" src="obrazek.png" alt="DVD 3">
     <img class="dvd-img" src="obrazek.png" alt="DVD 4">
+    <img class="dvd-img" src="obrazek.png" alt="DVD 5">
 
-    <!-- OBRAZEK BONUSOWY (Z WIZERUNKIEM obrazeczek.jpg) -->
+    <!-- PRZELATUJĄCY TIKTOK -->
+    <div id="tiktok-flyer">TikTok: pt_Pantymon</div>
+
+    <!-- OBRAZEK BONUSOWY -->
     <img id="bonus-item" src="obrazeczek.jpg" alt="Bonus +500" onclick="collectBonus()">
 
     <!-- UCIEKAJĄCY PRZYCISK -->
@@ -642,7 +664,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // SZYBKIE ŁADOWANIE TEKSTUR W TLE (Preload obrazów w pamięci przeglądarki podczas ekranu startowego)
+        // SZYBKIE ŁADOWANIE TEKSTUR W TLE
         const assetsToPreload = ['obraz.png', 'obrazek.png', 'kinger.jpg', 'obrazeczek.jpg'];
         assetsToPreload.forEach(src => {
             const img = new Image();
@@ -725,7 +747,6 @@
             playerName = input;
             localStorage.setItem('clicker_current_player', playerName);
             
-            // Zamknięcie ekranu startowego (tekstury są już załadowane w tle)
             document.getElementById('login-screen').style.display = 'none';
             
             audio.play().catch(error => console.log("Błąd audio:", error));
@@ -906,25 +927,25 @@
                 }
             } 
             else if (codeInput === 'dvd') {
-                if (unlockedCodes['dvd']) {
-                    alert('Ten kod jest już aktywny!');
-                } else {
-                    unlockedCodes['dvd'] = true;
-                    localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
-                    closeCodeModal();
-                    lolAudio.currentTime = 0;
-                    lolAudio.play().catch(e => {});
+                closeCodeModal();
+                lolAudio.currentTime = 0;
+                lolAudio.play().catch(e => {});
 
-                    unlockImg.style.display = 'none';
-                    unlockVideo.style.display = 'block';
-                    unlockVideo.currentTime = 0;
-                    unlockVideo.play().catch(e => {});
+                unlockImg.style.display = 'none';
+                unlockVideo.style.display = 'block';
+                unlockVideo.currentTime = 0;
+                unlockVideo.play().catch(e => {});
 
-                    document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
-                    document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
-                    document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz super szybko!";
-                    document.getElementById('unlock-modal').style.display = 'flex';
-                }
+                document.getElementById('unlock-title').innerText = "⚡ TURBO DVD! ⚡";
+                document.getElementById('unlock-subtitle').innerText = "Tryb: Przyspieszenie DVD";
+                document.getElementById('unlock-desc').innerText = "Latające obrazki pędzą teraz jeszcze szybciej!";
+                document.getElementById('unlock-modal').style.display = 'flex';
+                
+                // Każde użycie kodu DVD zwiększa prędkość obrazków
+                dvdData.forEach(item => {
+                    item.vx *= 1.5;
+                    item.vy *= 1.5;
+                });
             } 
             else if (codeInput === 'darmowe punkty') {
                 closeCodeModal();
@@ -958,7 +979,7 @@
             list.innerHTML = `<li>${playerName || 'Gracz'}: ${score} pkt</li>`;
         }
 
-        // ANIMACJA 4 OBRAZKÓW DVD
+        // ANIMACJA 5 OBRAZKÓW DVD
         const dvdImgs = document.querySelectorAll('.dvd-img');
         const dvdData = [];
         
@@ -966,12 +987,13 @@
             dvdImgs.forEach((img, i) => {
                 dvdData.push({
                     el: img,
-                    x: Math.random() * (window.innerWidth - 120),
-                    y: Math.random() * (window.innerHeight - 120),
+                    x: Math.random() * Math.max(100, window.innerWidth - 120),
+                    y: Math.random() * Math.max(100, window.innerHeight - 120),
                     vx: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
                     vy: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2)
                 });
             });
+            animateDvd();
         });
 
         function animateDvd() {
@@ -993,9 +1015,31 @@
             });
             requestAnimationFrame(animateDvd);
         }
-        animateDvd();
 
-        // SYSTEM BONUSOWY (PRZELATUJĄCY OBRAZEK obrazeczek.jpg +500 PKT)
+        // PRZELATUJĄCY NAPIS TIKTOK
+        const tiktokFlyer = document.getElementById('tiktok-flyer');
+        function triggerTikTokFlyer() {
+            if (playerName === '') return;
+            
+            const randomY = Math.random() * (window.innerHeight - 100) + 50;
+            tiktokFlyer.style.top = `${randomY}px`;
+            
+            const duration = 6 + Math.random() * 4;
+            tiktokFlyer.style.animation = `none`;
+            tiktokFlyer.offsetHeight;
+            tiktokFlyer.style.animation = `flyAcross ${duration}s linear forwards`;
+            tiktokFlyer.style.display = 'block';
+
+            setTimeout(() => {
+                tiktokFlyer.style.display = 'none';
+            }, duration * 1000);
+        }
+
+        setInterval(() => {
+            triggerTikTokFlyer();
+        }, 18000);
+
+        // SYSTEM BONUSOWY
         const bonusItem = document.getElementById('bonus-item');
         let bonusActive = false;
         let bonusX = 0, bonusY = 0, bonusVx = 0, bonusVy = 0;

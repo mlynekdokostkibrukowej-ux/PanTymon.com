@@ -214,23 +214,29 @@
             cursor: pointer;
         }
 
-        /* STYLES DLA OPINII (NOWOŚĆ) */
+        /* STYL PRZYCISKU OPINII PO LEWEJ (IDEALNIE DOPASOWANY) */
         .feedback-btn {
             position: absolute;
-            top: 215px;
+            top: 220px;
             left: 15px;
             background: #ffcc00;
             color: #1a1a1a;
             border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
             font-weight: bold;
             font-size: 13px;
             cursor: pointer;
             z-index: 25;
-            width: 194px;
+            width: 212px;
             box-sizing: border-box;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .feedback-btn:hover {
+            transform: scale(1.03);
+            background: #ffdb4d;
         }
 
         .feedback-box {
@@ -315,7 +321,7 @@
             100% { box-shadow: 0 0 35px #ffcc00; }
         }
 
-        /* SKLEP Z ULEPSZENIAMI Z MOŻLIWOŚCIĄ ZWIJANIA */
+        /* SKLEP Z ULEPSZENIAMI Z MOŻLIWOŚCIą ZWIJANIA */
         .shop-wrapper {
             position: absolute;
             top: 15px;
@@ -454,7 +460,7 @@
             border: 1px solid rgba(0, 255, 204, 0.4);
             z-index: 25;
             font-size: 13px;
-            min-width: 180px;
+            width: 180px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
 
@@ -563,7 +569,7 @@
     <!-- PRZYCISK OPINII PO LEWEJ -->
     <button class="feedback-btn" onclick="openFeedbackModal()">💬 OPINIE (<span id="feedback-count">0</span>)</button>
 
-    <!-- SKLEP Z MOŻLIWOŚCIĄ SCHOWANIA -->
+    <!-- SKLEP Z MOŻLIWOŚCIą SCHOWANIA -->
     <div class="shop-wrapper" id="shop-wrapper">
         <button class="shop-toggle-btn" id="shop-toggle-btn" onclick="toggleShop()" title="Zwiń / Rozwiń sklep">▶</button>
         <div class="shop-container">
@@ -688,7 +694,9 @@
             messagingSenderId: "299267672814",
             appId: "1:299267672814:web:1d24ddc412754def9e81ff"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.database();
 
         let playerName = '';
@@ -771,6 +779,29 @@
 
         function changeNickname() {
             document.getElementById('login-screen').style.display = 'flex';
+        }
+
+        // KLIKANIE GŁÓWNEGO OBRAZKA
+        function addPointAndChangeColor(event) {
+            score++;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('clicker_saved_score', score);
+            checkAchievements();
+
+            // Efekt pływającego tekstu
+            const x = event.clientX || (event.touches ? event.touches[0].clientX : window.innerWidth / 2);
+            const y = event.clientY || (event.touches ? event.touches[0].clientY : window.innerHeight / 2);
+            
+            const floatEl = document.createElement('div');
+            floatEl.className = 'floating-text';
+            floatEl.innerText = '+1';
+            floatEl.style.left = `${x - 10}px`;
+            floatEl.style.top = `${y - 20}px`;
+            document.body.appendChild(floatEl);
+
+            setTimeout(() => {
+                floatEl.remove();
+            }, 800);
         }
 
         targetImg.addEventListener('touchstart', function(e) {
@@ -990,6 +1021,51 @@
         function showKingerAtScore() {
             document.getElementById('kinger-score-icon').style.display = 'inline-block';
         }
+
+        function renderLeaderboard() {
+            const list = document.getElementById('high-scores-list');
+            list.innerHTML = `<li>${playerName || 'Gracz'}: ${score} pkt</li>`;
+        }
+
+        // RUCHOME TŁO DVD I PRZYCISK UCIEKAJĄCY
+        const dvdImgs = document.querySelectorAll('.dvd-img');
+        const dvdData = [];
+        dvdImgs.forEach((img, i) => {
+            dvdData.push({
+                el: img,
+                x: Math.random() * (window.innerWidth - 140),
+                y: Math.random() * (window.innerHeight - 100),
+                vx: (Math.random() < 0.5 ? 1 : -1) * (2 + Math.random() * 2),
+                vy: (Math.random() < 0.5 ? 1 : -1) * (2 + Math.random() * 2)
+            });
+        });
+
+        function animateDvd() {
+            dvdData.forEach(item => {
+                item.x += item.vx;
+                item.y += item.vy;
+
+                if (item.x <= 0 || item.x + 140 >= window.innerWidth) item.vx *= -1;
+                if (item.y <= 0 || item.y + 100 >= window.innerHeight) item.vy *= -1;
+
+                item.el.style.left = `${item.x}px`;
+                item.el.style.top = `${item.y}px`;
+            });
+            requestAnimationFrame(animateDvd);
+        }
+        animateDvd();
+
+        const movingBtn = document.getElementById('btn');
+        function moveButton() {
+            const maxX = window.innerWidth - movingBtn.offsetWidth - 50;
+            const maxY = window.innerHeight - movingBtn.offsetHeight - 50;
+            const randomX = Math.max(50, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(50, Math.floor(Math.random() * maxY));
+            movingBtn.style.left = `${randomX}px`;
+            movingBtn.style.top = `${randomY}px`;
+        }
+        movingBtn.style.left = '100px';
+        movingBtn.style.top = '200px';
     </script>
 </body>
 </html>

@@ -181,7 +181,7 @@
             font-size: 13px;
             cursor: pointer;
             z-index: 25;
-            width: 180px;
+            width: 190px;
             box-sizing: border-box;
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
             transition: transform 0.2s, background 0.2s;
@@ -872,14 +872,12 @@
                 return;
             }
 
-            // Zamieniamy obiekt na tablicę i sortujemy malejąco po wynikach
             const players = Object.values(data);
             players.sort((a, b) => b.score - a.score);
 
             list.innerHTML = '';
-            // Bierzemy top 5 graczy
             const top5 = players.slice(0, 5);
-            top5.forEach((p, index) => {
+            top5.forEach((p) => {
                 const li = document.createElement('li');
                 li.innerText = `${p.nick}: ${p.score} pkt`;
                 list.appendChild(li);
@@ -969,21 +967,18 @@
             document.getElementById('kinger-score-icon').style.display = 'inline-block';
         }
 
-        // ANIMACJA 5 OBRAZKÓW DVD
+        // ANIMACJA 5 OBRAZKÓW DVD (Globalna tablica dvdData)
         const dvdImgs = document.querySelectorAll('.dvd-img');
         const dvdData = [];
         
-        window.addEventListener('load', () => {
-            dvdImgs.forEach((img, i) => {
-                dvdData.push({
-                    el: img,
-                    x: Math.random() * Math.max(100, window.innerWidth - 120),
-                    y: Math.random() * Math.max(100, window.innerHeight - 120),
-                    vx: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
-                    vy: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2)
-                });
+        dvdImgs.forEach((img) => {
+            dvdData.push({
+                el: img,
+                x: Math.random() * Math.max(100, window.innerWidth - 120),
+                y: Math.random() * Math.max(100, window.innerHeight - 120),
+                vx: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
+                vy: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2)
             });
-            animateDvd();
         });
 
         function animateDvd() {
@@ -1005,6 +1000,7 @@
             });
             requestAnimationFrame(animateDvd);
         }
+        animateDvd();
 
         const tiktokFlyer = document.getElementById('tiktok-flyer');
         function triggerTikTokFlyer() {

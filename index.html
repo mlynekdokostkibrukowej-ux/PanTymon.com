@@ -285,7 +285,7 @@
             width: 100vw;
             height: 100vh;
             object-fit: contain;
-            pointer-events: auto; /* Zmienione na auto, aby można było kliknąć i wyłączyć w przypadku DVD */
+            pointer-events: auto;
             cursor: pointer;
         }
 
@@ -334,7 +334,9 @@
             border-bottom-right-radius: 12px;
             border-bottom-left-radius: 12px;
             border: 1px solid #ff0055;
-            width: 170px;
+            width: 185px;
+            max-height: 80vh;
+            overflow-y: auto;
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
             box-sizing: border-box;
         }
@@ -535,7 +537,7 @@
     </div>
 
     <!-- SEKRETNY FULLSCREEN PLAYER -->
-    <div id="secret-fullscreen-modal">
+    <div id="secret-fullscreen-modal" onclick="closeSecretVideo()">
         <video id="secret-video" src="filmik.mp4"></video>
     </div>
 
@@ -556,8 +558,20 @@
             <button class="shop-btn" onclick="buyUpgrade('cursor', 50, 1)">
                 Autoklikacz (+1 CPS)<br><small>Koszt: <span id="cost-cursor">50</span> pkt</small>
             </button>
+            <button class="shop-btn" onclick="buyUpgrade('superCursor', 120, 2)">
+                Super Klikacz (+2 CPS)<br><small>Koszt: <span id="cost-superCursor">120</span> pkt</small>
+            </button>
             <button class="shop-btn" onclick="buyUpgrade('farm', 300, 5)">
                 Młynek Punktów (+5 CPS)<br><small>Koszt: <span id="cost-farm">300</span> pkt</small>
+            </button>
+            <button class="shop-btn" onclick="buyUpgrade('cafe', 750, 10)">
+                Kawiarnia P. Piotra (+10 CPS)<br><small>Koszt: <span id="cost-cafe">750</span> pkt</small>
+            </button>
+            <button class="shop-btn" onclick="buyUpgrade('factory', 2000, 25)">
+                Fabryka Młynków (+25 CPS)<br><small>Koszt: <span id="cost-factory">2000</span> pkt</small>
+            </button>
+            <button class="shop-btn" onclick="buyUpgrade('quantum', 5000, 50)">
+                Kwantowy Klikacz (+50 CPS)<br><small>Koszt: <span id="cost-quantum">5000</span> pkt</small>
             </button>
         </div>
     </div>
@@ -570,7 +584,7 @@
         <div class="code-box">
             <span class="close-code" onclick="closeCodeModal()">&times;</span>
             <h3 style="color: #ffcc00; margin-top:0;">Wpisz Kod Promo</h3>
-            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>sekrecik</i>, <i>pan piotr</i>, <i>dvd</i>, <i>darmowe punkty</i>, <i>punkty</i></p>
+            <p style="color: #888; font-size: 11px; margin: -5px 0 10px 0;">Psst! Kody: <i>pan piotr</i>, <i>dvd</i>, <i>darmowe punkty</i>, <i>punkty</i></p>
             <input type="text" id="promo-code-input" placeholder="Kod...">
             <br>
             <button onclick="submitCode()">Użyj kodu</button>
@@ -673,7 +687,7 @@
         const secretVideo = document.getElementById('secret-video');
         const secretModal = document.getElementById('secret-fullscreen-modal');
 
-        let activeSecretType = ''; // Zmienna do rozróżniania, który kod wywołał filmik
+        let activeSecretType = '';
 
         // FIREBASE CONFIG
         const firebaseConfig = {
@@ -768,6 +782,7 @@
 
         function addPointAndChangeColor(event) {
             score++;
+            clickCountLastSecond++;
             document.getElementById('score').innerText = score;
             localStorage.setItem('clicker_saved_score', score);
             updateScoreInFirebase();
@@ -795,11 +810,18 @@
         let autoCps = parseInt(localStorage.getItem('clicker_auto_cps')) || 0;
         let upgradeCosts = {
             cursor: parseInt(localStorage.getItem('cost_cursor')) || 50,
-            farm: parseInt(localStorage.getItem('cost_farm')) || 300
+            superCursor: parseInt(localStorage.getItem('cost_superCursor')) || 120,
+            farm: parseInt(localStorage.getItem('cost_farm')) || 300,
+            cafe: parseInt(localStorage.getItem('cost_cafe')) || 750,
+            factory: parseInt(localStorage.getItem('cost_factory')) || 2000,
+            quantum: parseInt(localStorage.getItem('cost_quantum')) || 5000
         };
 
-        document.getElementById('cost-cursor').innerText = upgradeCosts.cursor;
-        document.getElementById('cost-farm').innerText = upgradeCosts.farm;
+        // Inicjalizacja kosztów na stronie
+        for (let key in upgradeCosts) {
+            const el = document.getElementById(`cost-${key}`);
+            if (el) el.innerText = upgradeCosts[key];
+        }
 
         function buyUpgrade(type, baseCost, cpsAmount) {
             let currentCost = upgradeCosts[type];
@@ -898,253 +920,218 @@
             });
         });
 
-        db.ref('ranking').on('value', (snapshot) => {
+        // RANKING TOP 5
+        db.ref('ranking').orderByChild('score').limitToLast(5).on('value', (snapshot) => {
             const data = snapshot.val();
-            const list = document.getElementById('high-scores-list');
-            if (!list) return;
+            const listEl = document.getElementById('high-scores-list');
+            if (!listEl) return;
 
+            listEl.innerHTML = '';
             if (!data) {
-                list.innerHTML = '<li>Brak wyników</li>';
+                listEl.innerHTML = '<li>Brak wyników</li>';
                 return;
             }
 
-            const players = Object.values(data);
-            players.sort((a, b) => b.score - a.score);
-
-            list.innerHTML = '';
-            const top5 = players.slice(0, 5);
-            top5.forEach((p) => {
+            const sorted = Object.values(data).sort((a, b) => b.score - a.score);
+            sorted.forEach(item => {
                 const li = document.createElement('li');
-                li.innerText = `${p.nick}: ${p.score} pkt`;
-                list.appendChild(li);
+                li.innerText = `${item.nick}: ${item.score} pkt`;
+                listEl.appendChild(li);
             });
         });
 
-        function closeUnlockModal() {
-            document.getElementById('unlock-modal').style.display = 'none';
-            unlockVideo.pause();
-            unlockVideo.currentTime = 0;
-        }
-
-        function resetScoreToZero() {
-            score = 0;
-            document.getElementById('score').innerText = score;
-            localStorage.setItem('clicker_saved_score', score);
-            updateScoreInFirebase();
-        }
-
+        // KODY PROMO
         function submitCode() {
             const codeInput = document.getElementById('promo-code-input').value.trim().toLowerCase();
-            unlockImg.style.display = 'inline-block';
-            unlockVideo.style.display = 'none';
+            document.getElementById('promo-code-input').value = '';
 
-            if (codeInput === 'sekrecik') {
+            if (codeModalActions[codeInput]) {
+                codeModalActions[codeInput]();
                 closeCodeModal();
-                score += 1000000;
+            } else {
+                alert("Nieprawidłowy kod!");
+            }
+        }
+
+        const codeModalActions = {
+            'sekrecik': () => {
+                if (unlockedCodes['sekrecik']) { alert("Ten kod został już użyty!"); return; }
+                unlockedCodes['sekrecik'] = true;
+                localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+                showUnlockModal('🎉 SEKRETNY FILMIK! 🎉', 'Wyraz twarzy pana Piotra', '', 'Prawdziwe dzieło sztuki!', true);
+            },
+            'pan piotr': () => {
+                if (unlockedCodes['pan piotr']) { alert("Ten kod został już użyty!"); return; }
+                unlockedCodes['pan piotr'] = true;
+                localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+                showUnlockModal('🎉 ODBLOKOWANO POSTAĆ! 🎉', 'Postać: Kinger', 'kinger.jpg', 'Daje +10 punktów co 15 sekund!', false);
+                showKingerAtScore();
+                startKingerInterval();
+            },
+            'dvd': () => {
+                if (unlockedCodes['dvd']) { alert("Ten kod został już użyty!"); return; }
+                unlockedCodes['dvd'] = true;
+                localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+                activeSecretType = 'dvd';
+                secretModal.style.display = 'flex';
+                secretVideo.play();
+            },
+            'darmowe punkty': () => {
+                if (unlockedCodes['darmowe punkty']) { alert("Ten kod został już użyty!"); return; }
+                unlockedCodes['darmowe punkty'] = true;
+                localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+                score += 500;
                 document.getElementById('score').innerText = score;
                 localStorage.setItem('clicker_saved_score', score);
                 updateScoreInFirebase();
+                alert("Otrzymujesz +500 darmowych punktów!");
+            },
+            'punkty': () => {
+                if (unlockedCodes['punkty']) { alert("Ten kod został już użyty!"); return; }
+                unlockedCodes['punkty'] = true;
+                localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
+                score += 100;
+                document.getElementById('score').innerText = score;
+                localStorage.setItem('clicker_saved_score', score);
+                updateScoreInFirebase();
+                alert("Otrzymujesz +100 punktów!");
+            }
+        };
 
-                activeSecretType = 'sekrecik';
-                secretVideo.src = "filmik.mp4";
-                secretModal.style.display = 'flex';
-                audio.pause();
-                secretVideo.currentTime = 0;
-                secretVideo.play().catch(e => {});
-            }
-            else if (codeInput === 'pan piotr') {
-                if (unlockedCodes['pan piotr']) {
-                    alert('Ten kod został już użyty!');
-                } else {
-                    unlockedCodes['pan piotr'] = true;
-                    localStorage.setItem('clicker_unlocked_codes', JSON.stringify(unlockedCodes));
-                    closeCodeModal();
-                    jejAudio.currentTime = 0;
-                    jejAudio.play().catch(e => {});
-                    
-                    document.getElementById('unlock-title').innerText = "🎉 ODBLOKOWANO! 🎉";
-                    document.getElementById('unlock-subtitle').innerText = "Postać: Kinger";
-                    unlockImg.src = "kinger.jpg";
-                    document.getElementById('unlock-desc').innerText = "Daje +10 punktów co 15 sekund!";
-                    document.getElementById('unlock-modal').style.display = 'flex';
-                    showKingerAtScore();
-                }
-            } 
-            else if (codeInput === 'dvd') {
-                closeCodeModal();
-                
-                activeSecretType = 'dvd';
-                secretVideo.src = "lol.mp4";
-                secretModal.style.display = 'flex';
-                audio.pause();
-                secretVideo.currentTime = 0;
-                secretVideo.play().catch(e => {});
-                
-                dvdData.forEach(item => {
-                    item.vx *= 1.5;
-                    item.vy *= 1.5;
-                });
-            } 
-            else if (codeInput === 'darmowe punkty') {
-                closeCodeModal();
-                resetScoreToZero();
-                alert('🤡 DARMOWYCH PUNKTÓW NIE MA! Zostałeś oszukany i Twoje punkty wynoszą teraz 0! 🤡');
-            } 
-            else if (codeInput === 'punkty') {
-                closeCodeModal();
-                resetScoreToZero();
-                latwoAudio.currentTime = 0;
-                latwoAudio.play().catch(e => {});
+        function showUnlockModal(title, subtitle, imgSrc, desc, isVideo) {
+            document.getElementById('unlock-title').innerText = title;
+            document.getElementById('unlock-subtitle').innerText = subtitle;
+            document.getElementById('unlock-desc').innerText = desc;
 
-                document.getElementById('unlock-title').innerText = "💀 KOD OSZUSTWO 💀";
-                document.getElementById('unlock-subtitle').innerText = "Błąd systemu: Punkty wyczyszczone!";
-                unlockImg.src = "obrazek.png";
-                document.getElementById('unlock-desc').innerText = "Chciałeś łatwych punktów? Twój wynik to teraz 0!";
-                document.getElementById('unlock-modal').style.display = 'flex';
+            if (isVideo) {
+                unlockImg.style.display = 'none';
+                unlockVideo.style.display = 'block';
+                unlockVideo.play();
+            } else {
+                unlockVideo.style.display = 'none';
+                unlockVideo.pause();
+                unlockImg.src = imgSrc;
+                unlockImg.style.display = 'block';
             }
-            else {
-                alert('Nieprawidłowy kod!');
-            }
-            document.getElementById('promo-code-input').value = '';
+            document.getElementById('unlock-modal').style.display = 'flex';
         }
 
-        // Funkcja do zamykania filmiku pełnoekranowego
+        function closeUnlockModal() {
+            unlockVideo.pause();
+            document.getElementById('unlock-modal').style.display = 'none';
+        }
+
         function closeSecretVideo() {
-            secretModal.style.display = 'none';
             secretVideo.pause();
-            secretVideo.currentTime = 0;
-            if (!isMuted) {
-                audio.play().catch(e => {});
-            }
+            secretModal.style.display = 'none';
         }
-
-        // Kliknięcie w filmik wyłącza go TYLKO wtedy, gdy odpalił go kod "dvd"
-        secretVideo.addEventListener('click', () => {
-            if (activeSecretType === 'dvd') {
-                closeSecretVideo();
-            }
-        });
-
-        // Wznowienie muzyki / zamknięcie po zakończeniu filmiku (dla obu)
-        secretVideo.addEventListener('ended', () => {
-            closeSecretVideo();
-        });
-
-        // Zamknięcie filmiku DVD za pomocą klawisza ESC
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && secretModal.style.display === 'flex' && activeSecretType === 'dvd') {
-                closeSecretVideo();
-            }
-        });
 
         function showKingerAtScore() {
             document.getElementById('kinger-score-icon').style.display = 'inline-block';
         }
 
-        const dvdImgs = document.querySelectorAll('.dvd-img');
-        const dvdData = [];
-        
-        dvdImgs.forEach((img) => {
-            dvdData.push({
-                el: img,
-                x: Math.random() * Math.max(100, window.innerWidth - 120),
-                y: Math.random() * Math.max(100, window.innerHeight - 120),
-                vx: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2),
-                vy: (Math.random() < 0.5 ? 1 : -1) * (2.5 + Math.random() * 2)
-            });
-        });
-
-        function animateDvd() {
-            dvdData.forEach(item => {
-                item.x += item.vx;
-                item.y += item.vy;
-
-                const imgWidth = item.el.offsetWidth || 120;
-                const imgHeight = item.el.offsetHeight || 120;
-
-                if (item.x <= 0) { item.x = 0; item.vx *= -1; }
-                if (item.x + imgWidth >= window.innerWidth) { item.x = window.innerWidth - imgWidth; item.vx *= -1; }
-                
-                if (item.y <= 0) { item.y = 0; item.vy *= -1; }
-                if (item.y + imgHeight >= window.innerHeight) { item.y = window.innerHeight - imgHeight; item.vy *= -1; }
-
-                item.el.style.left = `${item.x}px`;
-                item.el.style.top = `${item.y}px`;
-            });
-            requestAnimationFrame(animateDvd);
-        }
-        animateDvd();
-
-        const tiktokFlyer = document.getElementById('tiktok-flyer');
-        function triggerTikTokFlyer() {
-            if (playerName === '') return;
-            const randomY = Math.random() * (window.innerHeight - 100) + 50;
-            tiktokFlyer.style.top = `${randomY}px`;
-            const duration = 6 + Math.random() * 4;
-            tiktokFlyer.style.animation = `none`;
-            tiktokFlyer.offsetHeight;
-            tiktokFlyer.style.animation = `flyAcross ${duration}s linear forwards`;
-            tiktokFlyer.style.display = 'block';
-            setTimeout(() => { tiktokFlyer.style.display = 'none'; }, duration * 1000);
-        }
-        setInterval(() => { triggerTikTokFlyer(); }, 18000);
-
-        const bonusItem = document.getElementById('bonus-item');
-        let bonusActive = false;
-        let bonusX = 0, bonusY = 0, bonusVx = 0, bonusVy = 0;
-
-        function spawnBonus() {
-            if (bonusActive) return;
-            bonusActive = true;
-            bonusItem.style.display = 'block';
-            bonusX = Math.random() < 0.5 ? -100 : window.innerWidth + 100;
-            bonusY = Math.random() * (window.innerHeight - 200) + 100;
-            bonusVx = (bonusX < 0 ? 1 : -1) * (3 + Math.random() * 2);
-            bonusVy = (Math.random() - 0.5) * 2;
-        }
-
-        function animateBonus() {
-            if (bonusActive) {
-                bonusX += bonusVx;
-                bonusY += bonusVy;
-                bonusItem.style.left = `${bonusX}px`;
-                bonusItem.style.top = `${bonusY}px`;
-                if (bonusX < -150 || bonusX > window.innerWidth + 150) {
-                    bonusActive = false;
-                    bonusItem.style.display = 'none';
+        function startKingerInterval() {
+            setInterval(() => {
+                if (unlockedCodes['pan piotr'] && playerName !== '') {
+                    score += 10;
+                    document.getElementById('score').innerText = score;
+                    localStorage.setItem('clicker_saved_score', score);
+                    updateScoreInFirebase();
+                    showAchievement('🤖 Kinger przynosi +10 pkt!');
                 }
-            }
-            requestAnimationFrame(animateBonus);
+            }, 15000);
         }
-        animateBonus();
 
+        if (unlockedCodes['pan piotr']) {
+            startKingerInterval();
+        }
+
+        // LICZNIK CPS
+        let clickCountLastSecond = 0;
         setInterval(() => {
-            if (!bonusActive && playerName !== '') { spawnBonus(); }
-        }, 20000);
+            const currentCps = clickCountLastSecond;
+            document.getElementById('cps').innerText = currentCps.toFixed(1);
+            if (currentCps > maxCps) {
+                maxCps = currentCps;
+                document.getElementById('max-cps').innerText = maxCps.toFixed(1);
+                localStorage.setItem('clicker_max_cps', maxCps);
+            }
+            clickCountLastSecond = 0;
+        }, 1000);
+
+        // UCIEKAJĄCY PRZYCISK
+        function moveButton() {
+            const btn = document.getElementById('btn');
+            const x = Math.random() * (window.innerWidth - 120);
+            const y = Math.random() * (window.innerHeight - 50);
+            btn.style.left = `${x}px`;
+            btn.style.top = `${y}px`;
+        }
+
+        // OBRAZKI DVD
+        const dvdImages = document.querySelectorAll('.dvd-img');
+        const dvdData = Array.from(dvdImages).map(() => ({
+            x: Math.random() * (window.innerWidth - 120),
+            y: Math.random() * (window.innerHeight - 120),
+            dx: (Math.random() - 0.5) * 4 || 2,
+            dy: (Math.random() - 0.5) * 4 || 2
+        }));
+
+        function animateDVD() {
+            dvdImages.forEach((img, i) => {
+                let data = dvdData[i];
+                data.x += data.dx;
+                data.y += data.dy;
+
+                if (data.x <= 0 || data.x + 120 >= window.innerWidth) data.dx *= -1;
+                if (data.y <= 0 || data.y + 120 >= window.innerHeight) data.dy *= -1;
+
+                img.style.left = `${data.x}px`;
+                img.style.top = `${data.y}px`;
+            });
+            requestAnimationFrame(animateDVD);
+        }
+        animateDVD();
+
+        // TIKTOK FLYER
+        function triggerTikTokFlyer() {
+            const flyer = document.getElementById('tiktok-flyer');
+            flyer.style.top = `${Math.random() * (window.innerHeight - 100) + 50}px`;
+            flyer.style.display = 'block';
+            flyer.style.animation = 'flyAcross 8s linear forwards';
+
+            setTimeout(() => {
+                flyer.style.display = 'none';
+                flyer.style.animation = '';
+            }, 8000);
+        }
+        setInterval(triggerTikTokFlyer, 25000);
+
+        // BONUS ITEM
+        function spawnBonus() {
+            const bonus = document.getElementById('bonus-item');
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
+            bonus.style.left = `${x}px`;
+            bonus.style.top = `${y}px`;
+            bonus.style.display = 'block';
+
+            setTimeout(() => {
+                bonus.style.display = 'none';
+            }, 5000);
+        }
 
         function collectBonus() {
-            if (!bonusActive) return;
             score += 500;
             document.getElementById('score').innerText = score;
             localStorage.setItem('clicker_saved_score', score);
             updateScoreInFirebase();
-            checkAchievements();
-            showAchievement("🎁 Złapano bonus! +500 punktów!");
-            bonusActive = false;
-            bonusItem.style.display = 'none';
+            document.getElementById('bonus-item').style.display = 'none';
+            showAchievement('🎁 Złapano bonus (+500 pkt)!');
+            jejAudio.play().catch(() => {});
         }
 
-        const movingBtn = document.getElementById('btn');
-        function moveButton() {
-            const maxX = window.innerWidth - movingBtn.offsetWidth - 30;
-            const maxY = window.innerHeight - movingBtn.offsetHeight - 30;
-            const randomX = Math.max(30, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(30, Math.floor(Math.random() * maxY));
-            movingBtn.style.left = `${randomX}px`;
-            movingBtn.style.top = `${randomY}px`;
-        }
-        movingBtn.style.left = '150px';
-        movingBtn.style.top = '250px';
+        setInterval(spawnBonus, 40000);
     </script>
 </body>
 </html>
